@@ -52,7 +52,7 @@ class LaplacianODEFunc(ODEFunc):
 
 class ExtendedLaplacianODEFunc(ODEFunc):
   # currently requires in_features = out_features
-  def __init__(self, in_features, out_features, opt, data, device, alpha_=1):
+  def __init__(self, in_features, out_features, opt, data, device, alpha_=2):
     super(ExtendedLaplacianODEFunc, self).__init__(opt, data, device)
 
     self.in_features = in_features
@@ -77,7 +77,7 @@ class ExtendedLaplacianODEFunc(ODEFunc):
     if self.nfe > self.opt["max_nfe"]:
       raise MaxNFEException
     self.nfe += 1
-    ax = self.sparse_multiply(x)
+    ax = self.sparse_multiply(x ** self.alpha_)
     if not self.opt['no_alpha_sigmoid']:
       alpha = torch.sigmoid(self.alpha_train)
     else:
