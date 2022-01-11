@@ -184,6 +184,14 @@ def main(cmd_opt):
   best_opt = best_params_dict[cmd_opt['dataset']]
   opt = {**cmd_opt, **best_opt}
 
+  print('[INFO] Experiment mode is : ', 'ON' if opt['experiment'] else 'OFF')
+  if(cmd_opt['experiment']):
+    opt['function'] = cmd_opt['function']
+    opt['block'] = cmd_opt['block']
+
+  print('[INFO] ODE function : ', opt['function'])
+  print('[INFO] Block type : ', opt['block'])
+
   if cmd_opt['beltrami']:
     opt['beltrami'] = True
 
@@ -278,7 +286,7 @@ if __name__ == '__main__':
                       help='apply sigmoid before multiplying by alpha')
   parser.add_argument('--beta_dim', type=str, default='sc', help='choose either scalar (sc) or vector (vc) beta')
   parser.add_argument('--block', type=str, default='constant', help='constant, mixed, attention, hard_attention')
-  parser.add_argument('--function', type=str, default='laplacian', help='laplacian, transformer, dorsey, GAT')
+  parser.add_argument('--function', type=str, default='ext_laplacian', help='laplacian, transformer, dorsey, GAT')
   parser.add_argument('--use_mlp', dest='use_mlp', action='store_true',
                       help='Add a fully connected layer to the encoder.')
   parser.add_argument('--add_source', dest='add_source', action='store_true',
@@ -393,9 +401,10 @@ if __name__ == '__main__':
 
   parser.add_argument('--pos_dist_quantile', type=float, default=0.001, help="percentage of N**2 edges to keep")
 
+  # Experiment mode - do not overwrite command options with best params
+  parser.add_argument("--experiment", action="store_true", help="Turn on or off experiment mode.")
 
   args = parser.parse_args()
 
   opt = vars(args)
-
   main(opt)

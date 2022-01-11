@@ -33,6 +33,7 @@ def set_block(opt):
 
 def set_function(opt):
   ode_str = opt['function']
+
   if ode_str == 'laplacian':
     f = LaplacianODEFunc
   elif ode_str == 'GAT':
@@ -40,7 +41,6 @@ def set_function(opt):
   elif ode_str == 'transformer':
     f = ODEFuncTransformerAtt
   elif ode_str == 'ext_laplacian': # The extended laplacian function
-    print('[INFO] You are using the extended version of Laplacian ODE Function')
     f = ExtendedLaplacianODEFunc
   else:
     raise FunctionNotDefined
