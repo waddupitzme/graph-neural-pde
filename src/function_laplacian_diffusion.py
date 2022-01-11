@@ -52,7 +52,7 @@ class LaplacianODEFunc(ODEFunc):
 
 class ExtendedLaplacianODEFunc(ODEFunc):
   # currently requires in_features = out_features
-  def __init__(self, in_features, out_features, opt, data, device, alpha_=2):
+  def __init__(self, in_features, out_features, opt, data, device, alpha_=4.0):
     super(ExtendedLaplacianODEFunc, self).__init__(opt, data, device)
 
     self.in_features = in_features
