@@ -1,3 +1,4 @@
+import wandb
 import argparse
 import numpy as np
 import torch
@@ -192,6 +193,9 @@ def main(cmd_opt):
   print('[INFO] ODE function : ', opt['function'])
   print('[INFO] Block type : ', opt['block'])
 
+  # Initialize wandb
+  wandb.init(project='graph-neural-diffusion', entity='hieubkvn123')
+
   if cmd_opt['beltrami']:
     opt['beltrami'] = True
 
@@ -246,6 +250,13 @@ def main(cmd_opt):
       best_time = model.odeblock.test_integrator.solver.best_time
 
     log = 'Epoch: {:03d}, Runtime {:03f}, Loss {:03f}, forward nfe {:d}, backward nfe {:d}, Train: {:.4f}, Val: {:.4f}, Test: {:.4f}, Best time: {:.4f}'
+    wandb.log({
+        'run_time' : time.time() - start_time,
+        'loss' : loss,
+        'train_acc' : train_acc,
+        'val_acc' : val_acc,
+        'test_acc' : test_acc
+    })
 
     print(log.format(epoch, time.time() - start_time, loss, model.fm.sum, model.bm.sum, train_acc, val_acc, test_acc, best_time))
   print('best val accuracy {:03f} with test accuracy {:03f} at epoch {:d} and best time {:03f}'.format(val_acc, test_acc,

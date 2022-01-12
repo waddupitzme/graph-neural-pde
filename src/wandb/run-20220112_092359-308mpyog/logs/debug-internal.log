@@ -1,0 +1,122 @@
+2022-01-12 09:24:00,231 INFO    MainThread:906 [internal.py:wandb_internal():91] W&B internal server running at pid: 906, started at: 2022-01-12 09:24:00.231882
+2022-01-12 09:24:00,233 DEBUG   HandlerThread:906 [handler.py:handle_request():120] handle_request: check_version
+2022-01-12 09:24:00,233 INFO    WriterThread:906 [datastore.py:open_for_write():77] open: /workspace/graph-neural-pde/src/wandb/run-20220112_092359-308mpyog/run-308mpyog.wandb
+2022-01-12 09:24:00,234 DEBUG   SenderThread:906 [sender.py:send():160] send: header
+2022-01-12 09:24:00,234 DEBUG   SenderThread:906 [sender.py:send():160] send: request
+2022-01-12 09:24:00,234 DEBUG   SenderThread:906 [sender.py:send_request():169] send_request: check_version
+2022-01-12 09:24:00,469 DEBUG   SenderThread:906 [sender.py:send():160] send: run
+2022-01-12 09:24:01,059 INFO    SenderThread:906 [sender.py:_start_run_threads():654] run started: 308mpyog with start time 1641979439
+2022-01-12 09:24:01,059 DEBUG   SenderThread:906 [sender.py:send():160] send: summary
+2022-01-12 09:24:01,060 INFO    SenderThread:906 [sender.py:_save_file():781] saving file wandb-summary.json with policy end
+2022-01-12 09:24:01,061 DEBUG   HandlerThread:906 [handler.py:handle_request():120] handle_request: run_start
+2022-01-12 09:24:02,084 DEBUG   HandlerThread:906 [meta.py:__init__():39] meta init
+2022-01-12 09:24:02,084 DEBUG   HandlerThread:906 [meta.py:__init__():53] meta init done
+2022-01-12 09:24:02,084 DEBUG   HandlerThread:906 [meta.py:probe():210] probe
+2022-01-12 09:24:02,085 DEBUG   HandlerThread:906 [meta.py:_setup_git():200] setup git
+2022-01-12 09:24:02,095 DEBUG   HandlerThread:906 [meta.py:_setup_git():207] setup git done
+2022-01-12 09:24:02,095 DEBUG   HandlerThread:906 [meta.py:_save_pip():57] save pip
+2022-01-12 09:24:02,096 DEBUG   HandlerThread:906 [meta.py:_save_pip():71] save pip done
+2022-01-12 09:24:02,096 DEBUG   HandlerThread:906 [meta.py:_save_conda():78] save conda
+2022-01-12 09:24:04,642 DEBUG   HandlerThread:906 [meta.py:_save_conda():86] save conda done
+2022-01-12 09:24:04,642 DEBUG   HandlerThread:906 [meta.py:probe():252] probe done
+2022-01-12 09:24:04,644 DEBUG   SenderThread:906 [sender.py:send():160] send: files
+2022-01-12 09:24:04,644 INFO    SenderThread:906 [sender.py:_save_file():781] saving file wandb-metadata.json with policy now
+2022-01-12 09:24:04,647 DEBUG   HandlerThread:906 [handler.py:handle_request():120] handle_request: status
+2022-01-12 09:24:04,647 DEBUG   SenderThread:906 [sender.py:send():160] send: request
+2022-01-12 09:24:04,647 DEBUG   SenderThread:906 [sender.py:send_request():169] send_request: status
+2022-01-12 09:24:06,660 DEBUG   HandlerThread:906 [handler.py:handle_request():120] handle_request: poll_exit
+2022-01-12 09:24:06,661 DEBUG   SenderThread:906 [sender.py:send():160] send: telemetry
+2022-01-12 09:24:07,117 DEBUG   SenderThread:906 [sender.py:send():160] send: exit
+2022-01-12 09:24:07,117 INFO    SenderThread:906 [sender.py:send_exit():238] handling exit code: 1
+2022-01-12 09:24:07,120 INFO    SenderThread:906 [sender.py:send_exit():246] send defer
+2022-01-12 09:24:07,120 DEBUG   SenderThread:906 [sender.py:send():160] send: request
+2022-01-12 09:24:07,120 DEBUG   SenderThread:906 [sender.py:send_request():169] send_request: poll_exit
+2022-01-12 09:24:07,121 DEBUG   HandlerThread:906 [handler.py:handle_request():120] handle_request: defer
+2022-01-12 09:24:07,122 INFO    HandlerThread:906 [handler.py:handle_request_defer():134] handle defer: 0
+2022-01-12 09:24:07,122 DEBUG   SenderThread:906 [sender.py:send():160] send: request
+2022-01-12 09:24:07,123 DEBUG   SenderThread:906 [sender.py:send_request():169] send_request: defer
+2022-01-12 09:24:07,123 INFO    SenderThread:906 [sender.py:send_request_defer():255] handle sender defer: 0
+2022-01-12 09:24:07,123 INFO    SenderThread:906 [sender.py:send_request_defer():291] send defer: 1
+2022-01-12 09:24:07,124 DEBUG   HandlerThread:906 [handler.py:handle_request():120] handle_request: defer
+2022-01-12 09:24:07,124 INFO    HandlerThread:906 [handler.py:handle_request_defer():134] handle defer: 1
+2022-01-12 09:24:07,210 DEBUG   SenderThread:906 [sender.py:send():160] send: request
+2022-01-12 09:24:07,210 DEBUG   SenderThread:906 [sender.py:send_request():169] send_request: defer
+2022-01-12 09:24:07,210 INFO    SenderThread:906 [sender.py:send_request_defer():255] handle sender defer: 1
+2022-01-12 09:24:07,211 INFO    SenderThread:906 [sender.py:send_request_defer():291] send defer: 2
+2022-01-12 09:24:07,211 DEBUG   SenderThread:906 [sender.py:send():160] send: stats
+2022-01-12 09:24:07,212 DEBUG   HandlerThread:906 [handler.py:handle_request():120] handle_request: defer
+2022-01-12 09:24:07,212 INFO    HandlerThread:906 [handler.py:handle_request_defer():134] handle defer: 2
+2022-01-12 09:24:07,213 DEBUG   SenderThread:906 [sender.py:send():160] send: request
+2022-01-12 09:24:07,213 DEBUG   SenderThread:906 [sender.py:send_request():169] send_request: defer
+2022-01-12 09:24:07,213 INFO    SenderThread:906 [sender.py:send_request_defer():255] handle sender defer: 2
+2022-01-12 09:24:07,214 INFO    SenderThread:906 [sender.py:send_request_defer():291] send defer: 3
+2022-01-12 09:24:07,214 DEBUG   HandlerThread:906 [handler.py:handle_request():120] handle_request: defer
+2022-01-12 09:24:07,215 INFO    HandlerThread:906 [handler.py:handle_request_defer():134] handle defer: 3
+2022-01-12 09:24:07,215 DEBUG   SenderThread:906 [sender.py:send():160] send: summary
+2022-01-12 09:24:07,216 INFO    SenderThread:906 [sender.py:_save_file():781] saving file wandb-summary.json with policy end
+2022-01-12 09:24:07,217 DEBUG   SenderThread:906 [sender.py:send():160] send: request
+2022-01-12 09:24:07,217 DEBUG   SenderThread:906 [sender.py:send_request():169] send_request: defer
+2022-01-12 09:24:07,217 INFO    SenderThread:906 [sender.py:send_request_defer():255] handle sender defer: 3
+2022-01-12 09:24:07,218 INFO    SenderThread:906 [sender.py:send_request_defer():291] send defer: 4
+2022-01-12 09:24:07,218 DEBUG   HandlerThread:906 [handler.py:handle_request():120] handle_request: defer
+2022-01-12 09:24:07,219 INFO    HandlerThread:906 [handler.py:handle_request_defer():134] handle defer: 4
+2022-01-12 09:24:07,219 DEBUG   SenderThread:906 [sender.py:send():160] send: request
+2022-01-12 09:24:07,219 DEBUG   SenderThread:906 [sender.py:send_request():169] send_request: defer
+2022-01-12 09:24:07,220 INFO    SenderThread:906 [sender.py:send_request_defer():255] handle sender defer: 4
+2022-01-12 09:24:07,227 DEBUG   HandlerThread:906 [handler.py:handle_request():120] handle_request: poll_exit
+2022-01-12 09:24:08,067 INFO    SenderThread:906 [sender.py:send_request_defer():291] send defer: 5
+2022-01-12 09:24:08,068 DEBUG   SenderThread:906 [sender.py:send():160] send: request
+2022-01-12 09:24:08,068 DEBUG   SenderThread:906 [sender.py:send_request():169] send_request: poll_exit
+2022-01-12 09:24:08,075 DEBUG   HandlerThread:906 [handler.py:handle_request():120] handle_request: defer
+2022-01-12 09:24:08,075 INFO    HandlerThread:906 [handler.py:handle_request_defer():134] handle defer: 5
+2022-01-12 09:24:08,078 DEBUG   SenderThread:906 [sender.py:send():160] send: request
+2022-01-12 09:24:08,078 DEBUG   SenderThread:906 [sender.py:send_request():169] send_request: defer
+2022-01-12 09:24:08,078 INFO    SenderThread:906 [sender.py:send_request_defer():255] handle sender defer: 5
+2022-01-12 09:24:08,078 INFO    SenderThread:906 [sender.py:send_request_defer():291] send defer: 6
+2022-01-12 09:24:08,084 DEBUG   HandlerThread:906 [handler.py:handle_request():120] handle_request: defer
+2022-01-12 09:24:08,084 INFO    HandlerThread:906 [handler.py:handle_request_defer():134] handle defer: 6
+2022-01-12 09:24:08,084 DEBUG   SenderThread:906 [sender.py:send():160] send: request
+2022-01-12 09:24:08,084 DEBUG   SenderThread:906 [sender.py:send_request():169] send_request: defer
+2022-01-12 09:24:08,084 INFO    SenderThread:906 [sender.py:send_request_defer():255] handle sender defer: 6
+2022-01-12 09:24:08,180 DEBUG   HandlerThread:906 [handler.py:handle_request():120] handle_request: poll_exit
+2022-01-12 09:24:08,730 INFO    SenderThread:906 [sender.py:send_request_defer():291] send defer: 7
+2022-01-12 09:24:08,731 DEBUG   SenderThread:906 [sender.py:send():160] send: request
+2022-01-12 09:24:08,731 DEBUG   SenderThread:906 [sender.py:send_request():169] send_request: poll_exit
+2022-01-12 09:24:08,733 DEBUG   HandlerThread:906 [handler.py:handle_request():120] handle_request: defer
+2022-01-12 09:24:08,733 INFO    HandlerThread:906 [handler.py:handle_request_defer():134] handle defer: 7
+2022-01-12 09:24:08,733 DEBUG   SenderThread:906 [sender.py:send():160] send: request
+2022-01-12 09:24:08,734 DEBUG   SenderThread:906 [sender.py:send_request():169] send_request: defer
+2022-01-12 09:24:08,734 INFO    SenderThread:906 [sender.py:send_request_defer():255] handle sender defer: 7
+2022-01-12 09:24:08,734 INFO    SenderThread:906 [sender.py:send_request_defer():291] send defer: 8
+2022-01-12 09:24:08,736 DEBUG   SenderThread:906 [sender.py:send():160] send: final
+2022-01-12 09:24:08,736 DEBUG   SenderThread:906 [sender.py:send():160] send: footer
+2022-01-12 09:24:08,737 DEBUG   HandlerThread:906 [handler.py:handle_request():120] handle_request: defer
+2022-01-12 09:24:08,737 INFO    HandlerThread:906 [handler.py:handle_request_defer():134] handle defer: 8
+2022-01-12 09:24:08,738 DEBUG   SenderThread:906 [sender.py:send():160] send: request
+2022-01-12 09:24:08,738 DEBUG   SenderThread:906 [sender.py:send_request():169] send_request: defer
+2022-01-12 09:24:08,738 INFO    SenderThread:906 [sender.py:send_request_defer():255] handle sender defer: 8
+2022-01-12 09:24:08,834 DEBUG   HandlerThread:906 [handler.py:handle_request():120] handle_request: poll_exit
+2022-01-12 09:24:08,835 DEBUG   SenderThread:906 [sender.py:send():160] send: request
+2022-01-12 09:24:08,835 DEBUG   SenderThread:906 [sender.py:send_request():169] send_request: poll_exit
+2022-01-12 09:24:08,938 DEBUG   HandlerThread:906 [handler.py:handle_request():120] handle_request: poll_exit
+2022-01-12 09:24:08,938 DEBUG   SenderThread:906 [sender.py:send():160] send: request
+2022-01-12 09:24:08,939 DEBUG   SenderThread:906 [sender.py:send_request():169] send_request: poll_exit
+2022-01-12 09:24:09,041 DEBUG   HandlerThread:906 [handler.py:handle_request():120] handle_request: poll_exit
+2022-01-12 09:24:09,042 DEBUG   SenderThread:906 [sender.py:send():160] send: request
+2022-01-12 09:24:09,042 DEBUG   SenderThread:906 [sender.py:send_request():169] send_request: poll_exit
+2022-01-12 09:24:09,145 DEBUG   HandlerThread:906 [handler.py:handle_request():120] handle_request: poll_exit
+2022-01-12 09:24:09,145 DEBUG   SenderThread:906 [sender.py:send():160] send: request
+2022-01-12 09:24:09,146 DEBUG   SenderThread:906 [sender.py:send_request():169] send_request: poll_exit
+2022-01-12 09:24:09,248 DEBUG   HandlerThread:906 [handler.py:handle_request():120] handle_request: poll_exit
+2022-01-12 09:24:09,249 DEBUG   SenderThread:906 [sender.py:send():160] send: request
+2022-01-12 09:24:09,249 DEBUG   SenderThread:906 [sender.py:send_request():169] send_request: poll_exit
+2022-01-12 09:24:09,352 DEBUG   HandlerThread:906 [handler.py:handle_request():120] handle_request: poll_exit
+2022-01-12 09:24:09,352 DEBUG   SenderThread:906 [sender.py:send():160] send: request
+2022-01-12 09:24:09,353 DEBUG   SenderThread:906 [sender.py:send_request():169] send_request: poll_exit
+2022-01-12 09:24:09,355 DEBUG   HandlerThread:906 [handler.py:handle_request():120] handle_request: get_summary
+2022-01-12 09:24:09,357 DEBUG   HandlerThread:906 [handler.py:handle_request():120] handle_request: sampled_history
+2022-01-12 09:24:09,359 DEBUG   HandlerThread:906 [handler.py:handle_request():120] handle_request: shutdown
+2022-01-12 09:24:09,360 INFO    HandlerThread:906 [handler.py:finish():624] shutting down handler
+2022-01-12 09:24:09,737 INFO    WriterThread:906 [datastore.py:close():258] close: /workspace/graph-neural-pde/src/wandb/run-20220112_092359-308mpyog/run-308mpyog.wandb
+2022-01-12 09:24:10,353 INFO    SenderThread:906 [sender.py:finish():884] shutting down sender
+2022-01-12 09:24:10,355 INFO    MainThread:906 [internal.py:handle_exit():78] Internal process exited
