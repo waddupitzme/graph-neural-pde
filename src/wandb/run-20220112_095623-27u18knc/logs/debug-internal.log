@@ -1,0 +1,48 @@
+2022-01-12 09:56:24,112 INFO    MainThread:6057 [internal.py:wandb_internal():91] W&B internal server running at pid: 6057, started at: 2022-01-12 09:56:24.112600
+2022-01-12 09:56:24,113 DEBUG   HandlerThread:6057 [handler.py:handle_request():120] handle_request: check_version
+2022-01-12 09:56:24,114 INFO    WriterThread:6057 [datastore.py:open_for_write():77] open: /workspace/graph-neural-pde/src/wandb/run-20220112_095623-27u18knc/run-27u18knc.wandb
+2022-01-12 09:56:24,115 DEBUG   SenderThread:6057 [sender.py:send():160] send: header
+2022-01-12 09:56:24,115 DEBUG   SenderThread:6057 [sender.py:send():160] send: request
+2022-01-12 09:56:24,115 DEBUG   SenderThread:6057 [sender.py:send_request():169] send_request: check_version
+2022-01-12 09:56:24,302 DEBUG   SenderThread:6057 [sender.py:send():160] send: run
+2022-01-12 09:56:24,919 INFO    SenderThread:6057 [sender.py:_start_run_threads():654] run started: 27u18knc with start time 1641981383
+2022-01-12 09:56:24,920 DEBUG   SenderThread:6057 [sender.py:send():160] send: summary
+2022-01-12 09:56:24,920 INFO    SenderThread:6057 [sender.py:_save_file():781] saving file wandb-summary.json with policy end
+2022-01-12 09:56:24,927 DEBUG   HandlerThread:6057 [handler.py:handle_request():120] handle_request: run_start
+2022-01-12 09:56:25,871 DEBUG   HandlerThread:6057 [meta.py:__init__():39] meta init
+2022-01-12 09:56:25,871 DEBUG   HandlerThread:6057 [meta.py:__init__():53] meta init done
+2022-01-12 09:56:25,871 DEBUG   HandlerThread:6057 [meta.py:probe():210] probe
+2022-01-12 09:56:25,872 DEBUG   HandlerThread:6057 [meta.py:_setup_git():200] setup git
+2022-01-12 09:56:25,884 DEBUG   HandlerThread:6057 [meta.py:_setup_git():207] setup git done
+2022-01-12 09:56:25,884 DEBUG   HandlerThread:6057 [meta.py:_save_pip():57] save pip
+2022-01-12 09:56:25,885 DEBUG   HandlerThread:6057 [meta.py:_save_pip():71] save pip done
+2022-01-12 09:56:25,885 DEBUG   HandlerThread:6057 [meta.py:_save_conda():78] save conda
+2022-01-12 09:56:28,411 DEBUG   HandlerThread:6057 [meta.py:_save_conda():86] save conda done
+2022-01-12 09:56:28,411 DEBUG   HandlerThread:6057 [meta.py:probe():252] probe done
+2022-01-12 09:56:28,413 DEBUG   SenderThread:6057 [sender.py:send():160] send: files
+2022-01-12 09:56:28,413 INFO    SenderThread:6057 [sender.py:_save_file():781] saving file wandb-metadata.json with policy now
+2022-01-12 09:56:28,416 DEBUG   HandlerThread:6057 [handler.py:handle_request():120] handle_request: status
+2022-01-12 09:56:28,417 DEBUG   SenderThread:6057 [sender.py:send():160] send: request
+2022-01-12 09:56:28,417 DEBUG   SenderThread:6057 [sender.py:send_request():169] send_request: status
+2022-01-12 09:56:30,350 DEBUG   SenderThread:6057 [sender.py:send():160] send: history
+2022-01-12 09:56:30,351 DEBUG   SenderThread:6057 [sender.py:send():160] send: summary
+2022-01-12 09:56:30,356 INFO    SenderThread:6057 [sender.py:_save_file():781] saving file wandb-summary.json with policy end
+2022-01-12 09:56:32,982 DEBUG   SenderThread:6057 [sender.py:send():160] send: history
+2022-01-12 09:56:32,983 DEBUG   SenderThread:6057 [sender.py:send():160] send: summary
+2022-01-12 09:56:32,984 INFO    SenderThread:6057 [sender.py:_save_file():781] saving file wandb-summary.json with policy end
+2022-01-12 09:56:35,313 DEBUG   SenderThread:6057 [sender.py:send():160] send: history
+2022-01-12 09:56:35,314 DEBUG   SenderThread:6057 [sender.py:send():160] send: summary
+2022-01-12 09:56:35,315 INFO    SenderThread:6057 [sender.py:_save_file():781] saving file wandb-summary.json with policy end
+2022-01-12 09:56:37,561 DEBUG   SenderThread:6057 [sender.py:send():160] send: history
+2022-01-12 09:56:37,562 DEBUG   SenderThread:6057 [sender.py:send():160] send: summary
+2022-01-12 09:56:37,562 INFO    SenderThread:6057 [sender.py:_save_file():781] saving file wandb-summary.json with policy end
+2022-01-12 09:56:39,852 DEBUG   SenderThread:6057 [sender.py:send():160] send: history
+2022-01-12 09:56:39,853 DEBUG   SenderThread:6057 [sender.py:send():160] send: summary
+2022-01-12 09:56:39,854 INFO    SenderThread:6057 [sender.py:_save_file():781] saving file wandb-summary.json with policy end
+2022-01-12 09:56:40,834 WARNING MainThread:6057 [internal.py:wandb_internal():146] Internal process interrupt: 1
+2022-01-12 09:56:41,138 WARNING MainThread:6057 [internal.py:wandb_internal():146] Internal process interrupt: 2
+2022-01-12 09:56:41,139 ERROR   MainThread:6057 [internal.py:wandb_internal():149] Internal process interrupted.
+2022-01-12 09:56:41,852 INFO    WriterThread:6057 [datastore.py:close():258] close: /workspace/graph-neural-pde/src/wandb/run-20220112_095623-27u18knc/run-27u18knc.wandb
+2022-01-12 09:56:41,854 INFO    HandlerThread:6057 [handler.py:finish():624] shutting down handler
+2022-01-12 09:56:41,855 INFO    SenderThread:6057 [sender.py:finish():884] shutting down sender
+2022-01-12 09:56:43,711 INFO    MainThread:6057 [internal.py:handle_exit():78] Internal process exited

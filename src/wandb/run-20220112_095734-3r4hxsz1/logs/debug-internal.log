@@ -1,0 +1,28 @@
+2022-01-12 09:57:34,642 INFO    MainThread:6294 [internal.py:wandb_internal():91] W&B internal server running at pid: 6294, started at: 2022-01-12 09:57:34.642265
+2022-01-12 09:57:34,643 INFO    WriterThread:6294 [datastore.py:open_for_write():77] open: /workspace/graph-neural-pde/src/wandb/run-20220112_095734-3r4hxsz1/run-3r4hxsz1.wandb
+2022-01-12 09:57:34,644 DEBUG   HandlerThread:6294 [handler.py:handle_request():120] handle_request: check_version
+2022-01-12 09:57:34,645 DEBUG   SenderThread:6294 [sender.py:send():160] send: header
+2022-01-12 09:57:34,645 DEBUG   SenderThread:6294 [sender.py:send():160] send: request
+2022-01-12 09:57:34,645 DEBUG   SenderThread:6294 [sender.py:send_request():169] send_request: check_version
+2022-01-12 09:57:34,896 DEBUG   SenderThread:6294 [sender.py:send():160] send: run
+2022-01-12 09:57:35,656 INFO    SenderThread:6294 [sender.py:_start_run_threads():654] run started: 3r4hxsz1 with start time 1641981454
+2022-01-12 09:57:35,656 DEBUG   SenderThread:6294 [sender.py:send():160] send: summary
+2022-01-12 09:57:35,657 INFO    SenderThread:6294 [sender.py:_save_file():781] saving file wandb-summary.json with policy end
+2022-01-12 09:57:35,663 DEBUG   HandlerThread:6294 [handler.py:handle_request():120] handle_request: run_start
+2022-01-12 09:57:36,353 WARNING MainThread:6294 [internal.py:wandb_internal():146] Internal process interrupt: 1
+2022-01-12 09:57:36,552 WARNING MainThread:6294 [internal.py:wandb_internal():146] Internal process interrupt: 2
+2022-01-12 09:57:36,552 ERROR   MainThread:6294 [internal.py:wandb_internal():149] Internal process interrupted.
+2022-01-12 09:57:36,621 DEBUG   HandlerThread:6294 [meta.py:__init__():39] meta init
+2022-01-12 09:57:36,622 DEBUG   HandlerThread:6294 [meta.py:__init__():53] meta init done
+2022-01-12 09:57:36,622 DEBUG   HandlerThread:6294 [meta.py:probe():210] probe
+2022-01-12 09:57:36,622 DEBUG   HandlerThread:6294 [meta.py:_setup_git():200] setup git
+2022-01-12 09:57:36,636 DEBUG   HandlerThread:6294 [meta.py:_setup_git():207] setup git done
+2022-01-12 09:57:36,636 DEBUG   HandlerThread:6294 [meta.py:_save_pip():57] save pip
+2022-01-12 09:57:36,637 DEBUG   HandlerThread:6294 [meta.py:_save_pip():71] save pip done
+2022-01-12 09:57:36,637 DEBUG   HandlerThread:6294 [meta.py:_save_conda():78] save conda
+2022-01-12 09:57:36,672 INFO    SenderThread:6294 [sender.py:finish():884] shutting down sender
+2022-01-12 09:57:36,744 DEBUG   HandlerThread:6294 [meta.py:_save_conda():86] save conda done
+2022-01-12 09:57:36,744 DEBUG   HandlerThread:6294 [meta.py:probe():252] probe done
+2022-01-12 09:57:36,745 INFO    HandlerThread:6294 [handler.py:finish():624] shutting down handler
+2022-01-12 09:57:36,908 INFO    WriterThread:6294 [datastore.py:close():258] close: /workspace/graph-neural-pde/src/wandb/run-20220112_095734-3r4hxsz1/run-3r4hxsz1.wandb
+2022-01-12 09:57:39,930 INFO    MainThread:6294 [internal.py:handle_exit():78] Internal process exited

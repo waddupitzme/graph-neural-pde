@@ -52,7 +52,7 @@ class LaplacianODEFunc(ODEFunc):
 
 class ExtendedLaplacianODEFunc(ODEFunc):
   # currently requires in_features = out_features
-  def __init__(self, in_features, out_features, opt, data, device, alpha_=0.0):
+  def __init__(self, in_features, out_features, opt, data, device, alpha_=2.0):
     super(ExtendedLaplacianODEFunc, self).__init__(opt, data, device)
 
     self.in_features = in_features
@@ -86,4 +86,6 @@ class ExtendedLaplacianODEFunc(ODEFunc):
     f = alpha * ( ax - x ** self.alpha_ )
     if self.opt['add_source']:
       f = f + self.beta_train * self.x0
+
+    # print(f)
     return f
