@@ -1,0 +1,32 @@
+{
+    "os": "Linux-5.11.0-43-generic-x86_64-with-debian-buster-sid",
+    "python": "3.6.10",
+    "heartbeatAt": "2022-01-14T15:41:59.766069",
+    "startedAt": "2022-01-14T15:41:57.479039",
+    "docker": null,
+    "cpu_count": 16,
+    "cuda": null,
+    "args": [
+        "--block",
+        "ext_laplacian",
+        "--block",
+        "attention",
+        "--experiment",
+        "--lr",
+        "0.0000001",
+        "--max_iters",
+        "1000"
+    ],
+    "state": "running",
+    "program": "run_GNN.py",
+    "codePath": "src/run_GNN.py",
+    "git": {
+        "remote": "https://github.com/hieubkvn123/graph-neural-pde/",
+        "commit": "6064d2ec69a230bfe65372a9f60271e5e188eb8e"
+    },
+    "email": "javapythonscala@gmail.com",
+    "root": "/workspace/graph-neural-pde",
+    "host": "b3d02bf3c59b",
+    "username": "root",
+    "executable": "/opt/conda/bin/python3"
+}
