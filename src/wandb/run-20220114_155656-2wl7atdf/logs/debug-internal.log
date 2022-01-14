@@ -1,0 +1,39 @@
+2022-01-14 15:56:57,544 INFO    MainThread:3946 [internal.py:wandb_internal():91] W&B internal server running at pid: 3946, started at: 2022-01-14 15:56:57.544183
+2022-01-14 15:56:57,545 DEBUG   HandlerThread:3946 [handler.py:handle_request():120] handle_request: check_version
+2022-01-14 15:56:57,546 INFO    WriterThread:3946 [datastore.py:open_for_write():77] open: /workspace/graph-neural-pde/src/wandb/run-20220114_155656-2wl7atdf/run-2wl7atdf.wandb
+2022-01-14 15:56:57,546 DEBUG   SenderThread:3946 [sender.py:send():160] send: header
+2022-01-14 15:56:57,547 DEBUG   SenderThread:3946 [sender.py:send():160] send: request
+2022-01-14 15:56:57,547 DEBUG   SenderThread:3946 [sender.py:send_request():169] send_request: check_version
+2022-01-14 15:56:57,791 DEBUG   SenderThread:3946 [sender.py:send():160] send: run
+2022-01-14 15:56:58,330 INFO    SenderThread:3946 [sender.py:_start_run_threads():654] run started: 2wl7atdf with start time 1642175817
+2022-01-14 15:56:58,332 DEBUG   SenderThread:3946 [sender.py:send():160] send: summary
+2022-01-14 15:56:58,333 INFO    SenderThread:3946 [sender.py:_save_file():781] saving file wandb-summary.json with policy end
+2022-01-14 15:56:58,340 DEBUG   HandlerThread:3946 [handler.py:handle_request():120] handle_request: run_start
+2022-01-14 15:56:59,378 DEBUG   HandlerThread:3946 [meta.py:__init__():39] meta init
+2022-01-14 15:56:59,378 DEBUG   HandlerThread:3946 [meta.py:__init__():53] meta init done
+2022-01-14 15:56:59,379 DEBUG   HandlerThread:3946 [meta.py:probe():210] probe
+2022-01-14 15:56:59,379 DEBUG   HandlerThread:3946 [meta.py:_setup_git():200] setup git
+2022-01-14 15:56:59,392 DEBUG   HandlerThread:3946 [meta.py:_setup_git():207] setup git done
+2022-01-14 15:56:59,392 DEBUG   HandlerThread:3946 [meta.py:_save_pip():57] save pip
+2022-01-14 15:56:59,393 DEBUG   HandlerThread:3946 [meta.py:_save_pip():71] save pip done
+2022-01-14 15:56:59,393 DEBUG   HandlerThread:3946 [meta.py:_save_conda():78] save conda
+2022-01-14 15:57:01,918 DEBUG   HandlerThread:3946 [meta.py:_save_conda():86] save conda done
+2022-01-14 15:57:01,918 DEBUG   HandlerThread:3946 [meta.py:probe():252] probe done
+2022-01-14 15:57:01,920 DEBUG   SenderThread:3946 [sender.py:send():160] send: files
+2022-01-14 15:57:01,920 INFO    SenderThread:3946 [sender.py:_save_file():781] saving file wandb-metadata.json with policy now
+2022-01-14 15:57:01,923 DEBUG   HandlerThread:3946 [handler.py:handle_request():120] handle_request: status
+2022-01-14 15:57:01,923 DEBUG   SenderThread:3946 [sender.py:send():160] send: request
+2022-01-14 15:57:01,924 DEBUG   SenderThread:3946 [sender.py:send_request():169] send_request: status
+2022-01-14 15:57:06,692 DEBUG   SenderThread:3946 [sender.py:send():160] send: history
+2022-01-14 15:57:06,693 DEBUG   SenderThread:3946 [sender.py:send():160] send: summary
+2022-01-14 15:57:06,699 INFO    SenderThread:3946 [sender.py:_save_file():781] saving file wandb-summary.json with policy end
+2022-01-14 15:57:11,706 DEBUG   SenderThread:3946 [sender.py:send():160] send: history
+2022-01-14 15:57:11,707 DEBUG   SenderThread:3946 [sender.py:send():160] send: summary
+2022-01-14 15:57:11,709 INFO    SenderThread:3946 [sender.py:_save_file():781] saving file wandb-summary.json with policy end
+2022-01-14 15:57:12,548 WARNING MainThread:3946 [internal.py:wandb_internal():146] Internal process interrupt: 1
+2022-01-14 15:57:13,906 WARNING MainThread:3946 [internal.py:wandb_internal():146] Internal process interrupt: 2
+2022-01-14 15:57:13,907 ERROR   MainThread:3946 [internal.py:wandb_internal():149] Internal process interrupted.
+2022-01-14 15:57:13,942 INFO    WriterThread:3946 [datastore.py:close():258] close: /workspace/graph-neural-pde/src/wandb/run-20220114_155656-2wl7atdf/run-2wl7atdf.wandb
+2022-01-14 15:57:13,945 INFO    HandlerThread:3946 [handler.py:finish():624] shutting down handler
+2022-01-14 15:57:13,946 INFO    SenderThread:3946 [sender.py:finish():884] shutting down sender
+2022-01-14 15:57:16,161 INFO    MainThread:3946 [internal.py:handle_exit():78] Internal process exited

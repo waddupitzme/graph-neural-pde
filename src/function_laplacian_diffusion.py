@@ -78,14 +78,14 @@ class ExtendedLaplacianODEFunc(ODEFunc):
       raise MaxNFEException
     self.nfe += 1
     
-    ax = self.sparse_multiply(x)
     if not self.opt['no_alpha_sigmoid']:
       alpha = torch.sigmoid(self.alpha_train)
     else:
       alpha = self.alpha_train
 
+    ax = self.sparse_multiply(x)
     x_norm = torch.linalg.norm(x, 2, dim=0)
-    f = alpha * ax * (x_norm ** self.alpha_)
+    f = ax * x_norm ** self.alpha_ * 1e-5
     
 
     if self.opt['add_source']:
