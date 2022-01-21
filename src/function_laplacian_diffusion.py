@@ -44,8 +44,8 @@ class LaplacianODEFunc(ODEFunc):
       alpha = torch.sigmoid(self.alpha_train)
     else:
       alpha = self.alpha_train
-
-    f = alpha * (ax - x)
+    normx = torch.norm(x, p = 2, dim = 0)
+    f = alpha * ax * normx**0
     if self.opt['add_source']:
       f = f + self.beta_train * self.x0
     return f
