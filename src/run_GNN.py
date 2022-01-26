@@ -189,12 +189,13 @@ def main(cmd_opt):
   if(cmd_opt['experiment']):
     opt['function'] = cmd_opt['function']
     opt['block'] = cmd_opt['block']
+    opt['run_name'] = cmd_opt['run_name']
 
   print('[INFO] ODE function : ', opt['function'])
   print('[INFO] Block type : ', opt['block'])
 
   # Initialize wandb
-  wandb.init(project='graph-neural-diffusion', entity='hieubkvn123')
+  wandb.init(project='graph-neural-diffusion', entity='hieubkvn123', id=opt['run_name'])
 
   if cmd_opt['beltrami']:
     opt['beltrami'] = True
@@ -250,6 +251,7 @@ def main(cmd_opt):
       best_time = model.odeblock.test_integrator.solver.best_time
 
     log = 'Epoch: {:03d}, Runtime {:03f}, Loss {:03f}, forward nfe {:d}, backward nfe {:d}, Train: {:.4f}, Val: {:.4f}, Test: {:.4f}, Best time: {:.4f}'
+    
     wandb.log({
         'run_time' : time.time() - start_time,
         'loss' : loss,
@@ -414,6 +416,7 @@ if __name__ == '__main__':
 
   # Experiment mode - do not overwrite command options with best params
   parser.add_argument("--experiment", action="store_true", help="Turn on or off experiment mode.")
+  parser.add_argument("--run_name", required=False, default=None, help="Run ID for wandb project")
 
   args = parser.parse_args()
 
