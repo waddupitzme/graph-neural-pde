@@ -94,6 +94,10 @@ class ExtendedLaplacianODEFunc(ODEFunc):
 
     f = ax * (x_norm ** self.alpha_) * 1e-6
     
+    # Check if norm of f explodes 
+    # norm_f = torch.linalg.norm(f, 1, dim=1)
+    # norm_f = torch.mean(norm_f)
+    # print("Mean of first order norm |f(X)| = ", norm_f.item())
 
     if self.opt['add_source']:
       f = f + self.beta_train * self.x0
