@@ -190,9 +190,11 @@ def main(cmd_opt):
     opt['function'] = cmd_opt['function']
     opt['block'] = cmd_opt['block']
     opt['run_name'] = cmd_opt['run_name']
+    opt['time'] = cmd_opt['time']
 
   print('[INFO] ODE function : ', opt['function'])
   print('[INFO] Block type : ', opt['block'])
+  print('[INFO] T value : ', opt['time'])
 
   # Initialize wandb
   wandb.init(project='graph-neural-diffusion', entity='hieubkvn123', id=opt['run_name'])
