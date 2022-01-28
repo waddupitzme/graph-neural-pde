@@ -52,7 +52,7 @@ class LaplacianODEFunc(ODEFunc):
 
 class ExtendedLaplacianODEFunc(ODEFunc):
   # currently requires in_features = out_features
-  def __init__(self, in_features, out_features, opt, data, device, alpha_=2.0):
+  def __init__(self, in_features, out_features, opt, data, device, alpha_=1.0):
     super(ExtendedLaplacianODEFunc, self).__init__(opt, data, device)
 
     self.in_features = in_features
@@ -92,7 +92,7 @@ class ExtendedLaplacianODEFunc(ODEFunc):
     # Shape = (2045, 1)
     x_norm = x_norm.view(-1, 1)
 
-    f = ax * (x_norm ** self.alpha_) * 1e-6
+    f = (ax - x) * (x_norm ** self.alpha_) * 1e-6
     
     # Check if norm of f explodes 
     # norm_f = torch.linalg.norm(f, 1, dim=1)
