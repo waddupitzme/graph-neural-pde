@@ -1,6 +1,8 @@
 from function_transformer_attention import ODEFuncTransformerAtt
 from function_GAT_attention import ODEFuncAtt
-from function_laplacian_diffusion import LaplacianODEFunc, ExtendedLaplacianODEFunc
+from function_laplacian_diffusion import LaplacianODEFunc
+from function_laplacian_diffusion import ExtendedLaplacianODEFunc
+from function_laplacian_diffusion import ExtendedLaplacianODEFunc2
 from block_transformer_attention import AttODEblock
 from block_constant import ConstantODEblock
 from block_mixed import MixedODEblock
@@ -42,6 +44,8 @@ def set_function(opt):
     f = ODEFuncTransformerAtt
   elif ode_str == 'ext_laplacian': # The extended laplacian function
     f = ExtendedLaplacianODEFunc
+  elif ode_str == 'ext_laplacian2': # Extended laplacian function 2
+    f = ExtendedLaplacianODEFunc2
   else:
     raise FunctionNotDefined
   return f

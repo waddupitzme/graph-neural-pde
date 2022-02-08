@@ -13,6 +13,7 @@ from data import get_dataset, set_train_val_test_split
 from ogb.nodeproppred import Evaluator
 from graph_rewiring import apply_KNN, apply_beltrami, apply_edge_sampling
 from best_params import  best_params_dict
+from wandb_conf import wandb_config
 
 
 def get_optimizer(name, parameters, lr, weight_decay=0):
@@ -197,7 +198,7 @@ def main(cmd_opt):
   print('[INFO] T value : ', opt['time'])
 
   # Initialize wandb
-  wandb.init(project='graph-neural-diffusion', entity='hieubkvn123', id=opt['run_name'])
+  wandb.init(project=wandb_config['project'], entity=wandb_config['entity'], id=opt['run_name'], notes=opt['run_notes'])
 
   if cmd_opt['beltrami']:
     opt['beltrami'] = True
@@ -419,6 +420,7 @@ if __name__ == '__main__':
   # Experiment mode - do not overwrite command options with best params
   parser.add_argument("--experiment", action="store_true", help="Turn on or off experiment mode.")
   parser.add_argument("--run_name", required=False, default=None, help="Run ID for wandb project")
+  parser.add_argument("--run_notes", required=False, default=None, help="Additional description of the run")
 
   args = parser.parse_args()
 
