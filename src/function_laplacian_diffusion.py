@@ -93,7 +93,7 @@ class ExtendedLaplacianODEFunc(ODEFunc):
     x_norm = x_norm.view(-1, 1)
 
     f = (ax - x) * (x_norm ** self.alpha_) * 1e-6
-    
+
     # Check if norm of f explodes 
     # norm_f = torch.linalg.norm(f, 1, dim=1)
     # norm_f = torch.mean(norm_f)
