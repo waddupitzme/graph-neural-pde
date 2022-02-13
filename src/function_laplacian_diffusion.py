@@ -106,9 +106,19 @@ class ExtendedLaplacianODEFunc(ODEFunc):
 
 
 class ExtendedLaplacianODEFunc2(ODEFunc):
+  # Set global attributes
+  alpha_ = 1.0
+  clipping_bound = 0.05
+
   # currently requires in_features = out_features
-  def __init__(self, in_features, out_features, opt, data, device, alpha_=1.0):
+  def __init__(self, in_features, out_features, opt, data, device):
     super(ExtendedLaplacianODEFunc2, self).__init__(opt, data, device)
+    
+    ### Log information ###
+    print('****************** Extended Laplacian Function V.2 ******************')
+    print('Clipping Bound = ', self.clipping_bound)
+    print('Alpha = ', self.alpha_)
+    print('*********************************************************************')
 
     self.in_features = in_features
     self.out_features = out_features
@@ -116,7 +126,6 @@ class ExtendedLaplacianODEFunc2(ODEFunc):
     self.d = nn.Parameter(torch.zeros(opt['hidden_dim']) + 1)
     self.alpha_sc = nn.Parameter(torch.ones(1))
     self.beta_sc = nn.Parameter(torch.ones(1))
-    self.alpha_ = alpha_
 
   def sparse_multiply(self, x):
     if self.opt['block'] in ['attention']:  # adj is a multihead attention
@@ -145,7 +154,7 @@ class ExtendedLaplacianODEFunc2(ODEFunc):
     x_norm = torch.linalg.norm(x, 2, dim=1)
     
     # Truncate x_norm the have max=1
-    x_norm = torch.clamp(x_norm, min=None, max=1)
+    x_norm = torch.clamp(x_norm, min=None, max=self.clipping_bound)
 
     # Shape = (2045, 1)
     x_norm = x_norm.view(-1, 1)
@@ -165,9 +174,19 @@ class ExtendedLaplacianODEFunc2(ODEFunc):
 
 
 class ExtendedLaplacianODEFunc3(ODEFunc):
+  # Set global attributes
+  alpha_ = 1.0
+  clipping_bound = 0.05
+
   # currently requires in_features = out_features
-  def __init__(self, in_features, out_features, opt, data, device, alpha_=4.0):
+  def __init__(self, in_features, out_features, opt, data, device):
     super(ExtendedLaplacianODEFunc3, self).__init__(opt, data, device)
+
+    ### Log information ###
+    print('****************** Extended Laplacian Function V.3 ******************')
+    print('Clipping Bound = ', self.clipping_bound)
+    print('Alpha = ', self.alpha_)
+    print('*********************************************************************')
 
     self.in_features = in_features
     self.out_features = out_features
@@ -175,7 +194,6 @@ class ExtendedLaplacianODEFunc3(ODEFunc):
     self.d = nn.Parameter(torch.zeros(opt['hidden_dim']) + 1)
     self.alpha_sc = nn.Parameter(torch.ones(1))
     self.beta_sc = nn.Parameter(torch.ones(1))
-    self.alpha_ = alpha_
 
   def sparse_multiply(self, x):
     if self.opt['block'] in ['attention']:  # adj is a multihead attention
@@ -204,7 +222,7 @@ class ExtendedLaplacianODEFunc3(ODEFunc):
     x_norm = torch.linalg.norm(x, 2, dim=1)
 
     # Truncate x_norm the have max=1
-    x_norm = torch.clamp(x_norm, min=None, max=0.6)
+    x_norm = torch.clamp(x_norm, min=None, max=self.clipping_bound)
 
     # put x_norm through a limiting function
     # x_norm = torch.tanh(x_norm)

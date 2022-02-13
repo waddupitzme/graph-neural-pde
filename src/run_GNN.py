@@ -192,6 +192,8 @@ def main(cmd_opt):
     opt['block'] = cmd_opt['block']
     opt['run_name'] = cmd_opt['run_name']
     opt['time'] = cmd_opt['time']
+    opt['alpha_'] = cmd_opt['alpha_']
+    opt['clip_bound'] = cmd_opt['clip_bound']
 
   print('[INFO] ODE function : ', opt['function'])
   print('[INFO] Block type : ', opt['block'])
@@ -421,6 +423,10 @@ if __name__ == '__main__':
   parser.add_argument("--experiment", action="store_true", help="Turn on or off experiment mode.")
   parser.add_argument("--run_name", required=False, default=None, help="Run ID for wandb project")
   parser.add_argument("--run_notes", required=False, default=None, help="Additional description of the run")
+
+  # For extended laplacian functions with clipping bounds.
+  parser.add_argument("--alpha_", type=float, required=False, default=1.0, help='Alpha value')
+  parser.add_argument("--clip_bound", type=float, required=False, default=0.05, help='Norm clipping bound')
 
   args = parser.parse_args()
 

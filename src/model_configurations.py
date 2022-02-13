@@ -46,8 +46,12 @@ def set_function(opt):
   elif ode_str == 'ext_laplacian': # The extended laplacian function
     f = ExtendedLaplacianODEFunc
   elif ode_str == 'ext_laplacian2': # Extended laplacian function 2
+    ExtendedLaplacianODEFunc2.alpha_ = opt['alpha_']
+    ExtendedLaplacianODEFunc2.clipping_bound = opt['clip_bound']
     f = ExtendedLaplacianODEFunc2
   elif ode_str == 'ext_laplacian3': # Exnteded laplacian function 3 (truncated norm_x)
+    ExtendedLaplacianODEFunc3.alpha_ = opt['alpha_']
+    ExtendedLaplacianODEFunc3.clipping_bound = opt['clip_bound']
     f = ExtendedLaplacianODEFunc3
   else:
     raise FunctionNotDefined
