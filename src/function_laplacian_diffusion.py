@@ -166,7 +166,7 @@ class ExtendedLaplacianODEFunc2(ODEFunc):
 
 class ExtendedLaplacianODEFunc3(ODEFunc):
   # currently requires in_features = out_features
-  def __init__(self, in_features, out_features, opt, data, device, alpha_=1.0):
+  def __init__(self, in_features, out_features, opt, data, device, alpha_=4.0):
     super(ExtendedLaplacianODEFunc3, self).__init__(opt, data, device)
 
     self.in_features = in_features
@@ -204,7 +204,10 @@ class ExtendedLaplacianODEFunc3(ODEFunc):
     x_norm = torch.linalg.norm(x, 2, dim=1)
 
     # Truncate x_norm the have max=1
-    x_norm = torch.clamp(x_norm, min=None, max=1)
+    x_norm = torch.clamp(x_norm, min=None, max=0.6)
+
+    # put x_norm through a limiting function
+    # x_norm = torch.tanh(x_norm)
 
     # Shape = (2045, 1)
     x_norm = x_norm.view(-1, 1)
