@@ -17,14 +17,14 @@
 
 # python3 run_GNN.py --block ext_laplacian --block attention --experiment --lr 0.0000001 --max_iters 1000 --time 512.0 --max_nfe 10000 --run_name alpha=2.0_T=512.0
 
-python3 run_GNN.py --function ext_laplacian3 --block attention --experiment --lr 0.0000001 --max_iters 1000 --time 128.0 --max_nfe 100000000 --run_name test_run_clipped_01 --alpha 1.0 --clip_bound 0.1
+python3 run_GNN.py --function ext_laplacian3 --block attention --experiment --lr 0.0000001 --max_iters 1000 --time 128.0 --max_nfe 10000000000 --run_name 'test run alpha = 1 T = 128 1st run' --alpha 1.0
 
-python3 run_GNN.py --function ext_laplacian3 --block attention --experiment --lr 0.0000001 --max_iters 1000 --time 128.0 --max_nfe 100000000 --run_name test_run_clipped_05 --alpha 1.0 --clip_bound 0.5
+python3 run_GNN.py --function ext_laplacian3 --block attention --experiment --lr 0.0000001 --max_iters 1000 --time 128.0 --max_nfe 10000000000 --run_name 'test run alpha = 1 T = 128 2nd run' --alpha 1.0 
 
-python3 run_GNN.py --function ext_laplacian3 --block attention --experiment --lr 0.0000001 --max_iters 1000 --time 128.0 --max_nfe 100000000 --run_name test_run_clipped_10 --alpha 1.0 --clip_bound 1.0
+python3 run_GNN.py --function ext_laplacian3 --block attention --experiment --lr 0.0000001 --max_iters 1000 --time 128.0 --max_nfe 10000000000 --run_name 'test run alpha = 1 T = 128 3rd run' --alpha 1.0 
 
-python3 run_GNN.py --function ext_laplacian3 --block attention --experiment --lr 0.0000001 --max_iters 1000 --time 128.0 --max_nfe 100000000 --run_name test_run_clipped_03 --alpha 1.0 --clip_bound 0.3
+python3 run_GNN.py --function ext_laplacian3 --block attention --experiment --lr 0.0000001 --max_iters 1000 --time 128.0 --max_nfe 10000000000 --run_name 'test run alpha = 2 T = 128 1st run' --alpha 2.0 
 
-python3 run_GNN.py --function ext_laplacian3 --block attention --experiment --lr 0.0000001 --max_iters 1000 --time 128.0 --max_nfe 100000000 --run_name test_run_clipped_07 --alpha 1.0 --clip_bound 0.7
+python3 run_GNN.py --function ext_laplacian3 --block attention --experiment --lr 0.0000001 --max_iters 1000 --time 128.0 --max_nfe 10000000000 --run_name 'test run alpha = 2 T = 128 2nd run' --alpha 2.0 
 
 
