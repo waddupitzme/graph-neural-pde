@@ -22,11 +22,12 @@ cmd = """
                        --time 128.0 
                        --max_nfe 100000000 
                        --run_name 'Clipping alpha={} - bound={}'
-                       --alpha {} 
+                       --alpha_ {} 
                        --clip_bound {}
 """
 
 for alpha in alphas:
     for bound in bounds:
         cmd_ = cmd.format(args['function'], alpha, bound, alpha, bound).replace("\n", "").replace("\t", "")
-        os.system(cmd_)
+        # os.system(cmd_)
+        print(cmd_)
