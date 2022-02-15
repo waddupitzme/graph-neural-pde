@@ -231,44 +231,60 @@ def main(cmd_opt):
 
   this_test = test_OGB if opt['dataset'] == 'ogbn-arxiv' else test
 
-  for epoch in range(1, opt['epoch']):
-    start_time = time.time()
+  # Record best val_acc and test_acc
+  best_val_acc = 0.0
+  best_test_acc = 0.0
 
-    if opt['rewire_KNN'] and epoch % opt['rewire_KNN_epoch'] == 0 and epoch != 0:
-      ei = apply_KNN(data, pos_encoding, model, opt)
-      model.odeblock.odefunc.edge_index = ei
+  try:
+      for epoch in range(1, opt['epoch']):
+        start_time = time.time()
 
-    loss = train(model, optimizer, data, pos_encoding)
-    tmp_train_acc, tmp_val_acc, tmp_test_acc = this_test(model, data, pos_encoding, opt)
+        if opt['rewire_KNN'] and epoch % opt['rewire_KNN_epoch'] == 0 and epoch != 0:
+          ei = apply_KNN(data, pos_encoding, model, opt)
+          model.odeblock.odefunc.edge_index = ei
 
-    best_time = opt['time']
-    if tmp_val_acc > val_acc:
-      best_epoch = epoch
-      train_acc = tmp_train_acc
-      val_acc = tmp_val_acc
-      test_acc = tmp_test_acc
-      best_time = opt['time']
-    if not opt['no_early'] and model.odeblock.test_integrator.solver.best_val > val_acc:
-      best_epoch = epoch
-      val_acc = model.odeblock.test_integrator.solver.best_val
-      test_acc = model.odeblock.test_integrator.solver.best_test
-      train_acc = model.odeblock.test_integrator.solver.best_train
-      best_time = model.odeblock.test_integrator.solver.best_time
+        loss = train(model, optimizer, data, pos_encoding)
+        tmp_train_acc, tmp_val_acc, tmp_test_acc = this_test(model, data, pos_encoding, opt)
 
-    log = 'Epoch: {:03d}, Runtime {:03f}, Loss {:03f}, forward nfe {:d}, backward nfe {:d}, Train: {:.4f}, Val: {:.4f}, Test: {:.4f}, Best time: {:.4f}'
-    
-    wandb.log({
-        'run_time' : time.time() - start_time,
-        'loss' : loss,
-        'train_acc' : train_acc,
-        'val_acc' : val_acc,
-        'test_acc' : test_acc
-    })
+        best_time = opt['time']
+        if tmp_val_acc > val_acc:
+          best_epoch = epoch
+          train_acc = tmp_train_acc
+          val_acc = tmp_val_acc
+          test_acc = tmp_test_acc
+          best_time = opt['time']
+        if not opt['no_early'] and model.odeblock.test_integrator.solver.best_val > val_acc:
+          best_epoch = epoch
+          val_acc = model.odeblock.test_integrator.solver.best_val
+          test_acc = model.odeblock.test_integrator.solver.best_test
+          train_acc = model.odeblock.test_integrator.solver.best_train
+          best_time = model.odeblock.test_integrator.solver.best_time
 
-    print(log.format(epoch, time.time() - start_time, loss, model.fm.sum, model.bm.sum, train_acc, val_acc, test_acc, best_time))
+        log = 'Epoch: {:03d}, Runtime {:03f}, Loss {:03f}, forward nfe {:d}, backward nfe {:d}, Train: {:.4f}, Val: {:.4f}, Test: {:.4f}, Best time: {:.4f}'
+        
+        wandb.log({
+            'run_time' : time.time() - start_time,
+            'loss' : loss,
+            'train_acc' : train_acc,
+            'val_acc' : val_acc,
+            'test_acc' : test_acc
+        })
+
+        if(best_val_acc < val_acc): best_val_acc = val_acc
+        if(best_test_acc < test_acc) : best_test_acc = test_acc
+
+        print(log.format(epoch, time.time() - start_time, loss, model.fm.sum, model.bm.sum, train_acc, val_acc, test_acc, best_time))
+  except:
+        pass
+
   print('best val accuracy {:03f} with test accuracy {:03f} at epoch {:d} and best time {:03f}'.format(val_acc, test_acc,
                                                                                                      best_epoch,
                                                                                                      best_time))
+
+  # Store run history variables
+  with open("tests/history.csv", "a") as f:
+      f.write(f"{opt['time']},{opt['alpha_']},{opt['clip_bound']},{best_val_acc},{best_test_acc}\n")
+
   return train_acc, val_acc, test_acc
 
 
