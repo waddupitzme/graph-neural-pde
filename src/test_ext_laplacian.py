@@ -5,12 +5,13 @@ from argparse import ArgumentParser
 
 parser = ArgumentParser()
 parser.add_argument("--function", required=False, default="ext_laplacian3", help="The extended laplacian function to use")
-parser.add_argument("--clip_low", required=False, default=0.05, help="Lower bound for clipping value")
-parser.add_argument("--clip_high", required=False, default=0.95, help="Upper bound for clipping value")
+parser.add_argument("--clip_low", required=False, type = float, default=0.05, help="Lower bound for clipping value")
+parser.add_argument("--clip_high", required=False, type = float,  default=0.95, help="Upper bound for clipping value")
 parser.add_argument("--clip_step", required=False, default=0.1, help="Step size for clipping values")
 args = vars(parser.parse_args())
 
 alphas = [1.0, 2.0, 3.0, 4.0]
+# alphas = [1.0]
 bounds = np.arange(args['clip_low'], args['clip_high'], args['clip_step'])
 
 cmd = """
@@ -22,7 +23,7 @@ cmd = """
                        --time 128.0 
                        --max_nfe 100000000 
                        --run_name 'Clipping alpha={} - bound={}'
-                       --alpha_ {} 
+                       --alpha {} 
                        --clip_bound {}
 """
 
