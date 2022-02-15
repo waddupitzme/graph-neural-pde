@@ -10,8 +10,7 @@ parser.add_argument("--clip_high", required=False, type = float,  default=0.95, 
 parser.add_argument("--clip_step", required=False, default=0.1, help="Step size for clipping values")
 args = vars(parser.parse_args())
 
-alphas = [1.0, 2.0, 3.0, 4.0]
-# alphas = [1.0]
+alphas = [4.0, 3.0, 2.0, 1.0]
 bounds = np.arange(args['clip_low'], args['clip_high'], args['clip_step'])
 
 cmd = """
@@ -23,12 +22,15 @@ cmd = """
                        --time 128.0 
                        --max_nfe 100000000 
                        --run_name 'Clipping alpha={} - bound={}'
-                       --alpha {} 
+                       --alpha_ {} 
                        --clip_bound {}
 """
 
 for alpha in alphas:
     for bound in bounds:
         cmd_ = cmd.format(args['function'], alpha, bound, alpha, bound).replace("\n", "").replace("\t", "")
-        # os.system(cmd_)
+        
         print(cmd_)
+        os.system(cmd_)
+
+    

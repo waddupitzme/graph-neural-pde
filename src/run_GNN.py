@@ -267,7 +267,8 @@ def main(cmd_opt):
             'loss' : loss,
             'train_acc' : train_acc,
             'val_acc' : val_acc,
-            'test_acc' : test_acc
+            'test_acc' : test_acc,
+            'forward_nfe' : model.fm.sum
         })
 
         if(best_val_acc < val_acc): best_val_acc = val_acc
