@@ -282,7 +282,7 @@ def main(cmd_opt):
                                                                                                      best_time))
 
   # Store run history variables
-  with open("tests/history.csv", "w") as f:
+  with open("tests/history.csv", "a") as f:
       f.write(f"{opt['time']},{opt['alpha_']},{opt['clip_bound']},{best_val_acc},{best_test_acc}\n")
 
   return train_acc, val_acc, test_acc
