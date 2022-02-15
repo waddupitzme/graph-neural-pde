@@ -233,7 +233,7 @@ class ExtendedLaplacianODEFunc3(ODEFunc):
     # replace norm of x with norm of ax-x
 
     rhs_norm = torch.linalg.norm(ax-x, 2, dim = 1)
-    rhs_norm = torch.clamp(rhs_norm, min = None, max = self.clipping_bound)
+    # rhs_norm = torch.clamp(rhs_norm, min = None, max = self.clipping_bound)
     rhs_norm = rhs_norm.view(-1,1)
     f = (ax-x) * (rhs_norm ** self.alpha_)
 
