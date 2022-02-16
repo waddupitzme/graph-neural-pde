@@ -234,6 +234,8 @@ def main(cmd_opt):
   # Record best val_acc and test_acc
   best_val_acc = 0.0
   best_test_acc = 0.0
+  run_time_ls = []
+  fw_nfe_ls = []
 
   try:
       for epoch in range(1, opt['epoch']):
@@ -271,6 +273,9 @@ def main(cmd_opt):
             'forward_nfe' : model.fm.sum
         })
 
+        fw_nfe_ls.append(model.fm.sum)
+        run_time_ls.append(time.time() - start_time)
+
         if(best_val_acc < val_acc): best_val_acc = val_acc
         if(best_test_acc < test_acc) : best_test_acc = test_acc
 
@@ -281,10 +286,14 @@ def main(cmd_opt):
   print('best val accuracy {:03f} with test accuracy {:03f} at epoch {:d} and best time {:03f}'.format(val_acc, test_acc,
                                                                                                      best_epoch,
                                                                                                      best_time))
+  mean_fw_nfe = np.array(fw_nfe_ls).mean()
+  mean_run_time = np.array(run_time_ls).mean()
+  min_run_time = min(run_time_ls)
+  max_run_time = max(run_time_ls)
 
   # Store run history variables
   with open("tests/history.csv", "a") as f:
-      f.write(f"{opt['time']},{opt['alpha_']},{opt['clip_bound']},{best_val_acc},{best_test_acc}\n")
+      f.write(f"{opt['time']},{opt['alpha_']},{opt['clip_bound']},{best_val_acc},{best_test_acc},{mean_fw_nfe},{mean_run_time},{min_run_time},{max_run_time}\n")
 
   return train_acc, val_acc, test_acc
 
