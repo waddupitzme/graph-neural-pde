@@ -1,3 +1,4 @@
+import wandb
 import argparse
 import numpy as np
 import torch
@@ -12,6 +13,7 @@ from data import get_dataset, set_train_val_test_split
 from ogb.nodeproppred import Evaluator
 from graph_rewiring import apply_KNN, apply_beltrami, apply_edge_sampling
 from best_params import  best_params_dict
+from wandb_conf import wandb_config
 
 
 def get_optimizer(name, parameters, lr, weight_decay=0):
@@ -184,6 +186,22 @@ def main(cmd_opt):
   best_opt = best_params_dict[cmd_opt['dataset']]
   opt = {**cmd_opt, **best_opt}
 
+  print('[INFO] Experiment mode is : ', 'ON' if opt['experiment'] else 'OFF')
+  if(cmd_opt['experiment']):
+    opt['function'] = cmd_opt['function']
+    opt['block'] = cmd_opt['block']
+    opt['run_name'] = cmd_opt['run_name']
+    opt['time'] = cmd_opt['time']
+    opt['alpha_'] = cmd_opt['alpha_']
+    opt['clip_bound'] = cmd_opt['clip_bound']
+
+  print('[INFO] ODE function : ', opt['function'])
+  print('[INFO] Block type : ', opt['block'])
+  print('[INFO] T value : ', opt['time'])
+
+  # Initialize wandb
+  wandb.init(project=wandb_config['project'], entity=wandb_config['entity'], id=opt['run_name'], notes=opt['run_notes'])
+
   if cmd_opt['beltrami']:
     opt['beltrami'] = True
 
@@ -238,6 +256,14 @@ def main(cmd_opt):
       best_time = model.odeblock.test_integrator.solver.best_time
 
     log = 'Epoch: {:03d}, Runtime {:03f}, Loss {:03f}, forward nfe {:d}, backward nfe {:d}, Train: {:.4f}, Val: {:.4f}, Test: {:.4f}, Best time: {:.4f}'
+    
+    wandb.log({
+        'run_time' : time.time() - start_time,
+        'loss' : loss,
+        'train_acc' : train_acc,
+        'val_acc' : val_acc,
+        'test_acc' : test_acc
+    })
 
     print(log.format(epoch, time.time() - start_time, loss, model.fm.sum, model.bm.sum, train_acc, val_acc, test_acc, best_time))
   print('best val accuracy {:03f} with test accuracy {:03f} at epoch {:d} and best time {:03f}'.format(val_acc, test_acc,
@@ -278,7 +304,7 @@ if __name__ == '__main__':
                       help='apply sigmoid before multiplying by alpha')
   parser.add_argument('--beta_dim', type=str, default='sc', help='choose either scalar (sc) or vector (vc) beta')
   parser.add_argument('--block', type=str, default='constant', help='constant, mixed, attention, hard_attention')
-  parser.add_argument('--function', type=str, default='laplacian', help='laplacian, transformer, dorsey, GAT')
+  parser.add_argument('--function', type=str, default='ext_laplacian', help='laplacian, transformer, dorsey, GAT')
   parser.add_argument('--use_mlp', dest='use_mlp', action='store_true',
                       help='Add a fully connected layer to the encoder.')
   parser.add_argument('--add_source', dest='add_source', action='store_true',
@@ -393,9 +419,16 @@ if __name__ == '__main__':
 
   parser.add_argument('--pos_dist_quantile', type=float, default=0.001, help="percentage of N**2 edges to keep")
 
+  # Experiment mode - do not overwrite command options with best params
+  parser.add_argument("--experiment", action="store_true", help="Turn on or off experiment mode.")
+  parser.add_argument("--run_name", required=False, default=None, help="Run ID for wandb project")
+  parser.add_argument("--run_notes", required=False, default=None, help="Additional description of the run")
+
+  # For extended laplacian functions with clipping bounds.
+  parser.add_argument("--alpha_", type=float, required=False, default=1.0, help='Alpha value')
+  parser.add_argument("--clip_bound", type=float, required=False, default=0.05, help='Norm clipping bound')
 
   args = parser.parse_args()
 
   opt = vars(args)
-
   main(opt)
