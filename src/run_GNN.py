@@ -1,3 +1,4 @@
+import wandb
 import argparse
 import numpy as np
 import torch
@@ -12,6 +13,7 @@ from data import get_dataset, set_train_val_test_split
 from ogb.nodeproppred import Evaluator
 from graph_rewiring import apply_KNN, apply_beltrami, apply_edge_sampling
 from best_params import  best_params_dict
+from wandb_conf import wandb_config
 
 
 def get_optimizer(name, parameters, lr, weight_decay=0):
@@ -184,6 +186,22 @@ def main(cmd_opt):
   best_opt = best_params_dict[cmd_opt['dataset']]
   opt = {**cmd_opt, **best_opt}
 
+  print('[INFO] Experiment mode is : ', 'ON' if opt['experiment'] else 'OFF')
+  if(cmd_opt['experiment']):
+    opt['function'] = cmd_opt['function']
+    opt['block'] = cmd_opt['block']
+    opt['run_name'] = cmd_opt['run_name']
+    opt['time'] = cmd_opt['time']
+    opt['alpha_'] = cmd_opt['alpha_']
+    opt['clip_bound'] = cmd_opt['clip_bound']
+
+  print('[INFO] ODE function : ', opt['function'])
+  print('[INFO] Block type : ', opt['block'])
+  print('[INFO] T value : ', opt['time'])
+
+  # Initialize wandb
+  wandb.init(project=wandb_config['project'], entity=wandb_config['entity'], id=opt['run_name'], notes=opt['run_notes'])
+
   if cmd_opt['beltrami']:
     opt['beltrami'] = True
 
@@ -213,36 +231,70 @@ def main(cmd_opt):
 
   this_test = test_OGB if opt['dataset'] == 'ogbn-arxiv' else test
 
-  for epoch in range(1, opt['epoch']):
-    start_time = time.time()
+  # Record best val_acc and test_acc
+  best_val_acc = 0.0
+  best_test_acc = 0.0
+  run_time_ls = []
+  fw_nfe_ls = []
 
-    if opt['rewire_KNN'] and epoch % opt['rewire_KNN_epoch'] == 0 and epoch != 0:
-      ei = apply_KNN(data, pos_encoding, model, opt)
-      model.odeblock.odefunc.edge_index = ei
+  try:
+      for epoch in range(1, opt['epoch']):
+        start_time = time.time()
 
-    loss = train(model, optimizer, data, pos_encoding)
-    tmp_train_acc, tmp_val_acc, tmp_test_acc = this_test(model, data, pos_encoding, opt)
+        if opt['rewire_KNN'] and epoch % opt['rewire_KNN_epoch'] == 0 and epoch != 0:
+          ei = apply_KNN(data, pos_encoding, model, opt)
+          model.odeblock.odefunc.edge_index = ei
 
-    best_time = opt['time']
-    if tmp_val_acc > val_acc:
-      best_epoch = epoch
-      train_acc = tmp_train_acc
-      val_acc = tmp_val_acc
-      test_acc = tmp_test_acc
-      best_time = opt['time']
-    if not opt['no_early'] and model.odeblock.test_integrator.solver.best_val > val_acc:
-      best_epoch = epoch
-      val_acc = model.odeblock.test_integrator.solver.best_val
-      test_acc = model.odeblock.test_integrator.solver.best_test
-      train_acc = model.odeblock.test_integrator.solver.best_train
-      best_time = model.odeblock.test_integrator.solver.best_time
+        loss = train(model, optimizer, data, pos_encoding)
+        tmp_train_acc, tmp_val_acc, tmp_test_acc = this_test(model, data, pos_encoding, opt)
 
-    log = 'Epoch: {:03d}, Runtime {:03f}, Loss {:03f}, forward nfe {:d}, backward nfe {:d}, Train: {:.4f}, Val: {:.4f}, Test: {:.4f}, Best time: {:.4f}'
+        best_time = opt['time']
+        if tmp_val_acc > val_acc:
+          best_epoch = epoch
+          train_acc = tmp_train_acc
+          val_acc = tmp_val_acc
+          test_acc = tmp_test_acc
+          best_time = opt['time']
+        if not opt['no_early'] and model.odeblock.test_integrator.solver.best_val > val_acc:
+          best_epoch = epoch
+          val_acc = model.odeblock.test_integrator.solver.best_val
+          test_acc = model.odeblock.test_integrator.solver.best_test
+          train_acc = model.odeblock.test_integrator.solver.best_train
+          best_time = model.odeblock.test_integrator.solver.best_time
 
-    print(log.format(epoch, time.time() - start_time, loss, model.fm.sum, model.bm.sum, train_acc, val_acc, test_acc, best_time))
+        log = 'Epoch: {:03d}, Runtime {:03f}, Loss {:03f}, forward nfe {:d}, backward nfe {:d}, Train: {:.4f}, Val: {:.4f}, Test: {:.4f}, Best time: {:.4f}'
+        
+        wandb.log({
+            'run_time' : time.time() - start_time,
+            'loss' : loss,
+            'train_acc' : train_acc,
+            'val_acc' : val_acc,
+            'test_acc' : test_acc,
+            'forward_nfe' : model.fm.sum
+        })
+
+        fw_nfe_ls.append(model.fm.sum)
+        run_time_ls.append(time.time() - start_time)
+
+        if(best_val_acc < val_acc): best_val_acc = val_acc
+        if(best_test_acc < test_acc) : best_test_acc = test_acc
+
+        print(log.format(epoch, time.time() - start_time, loss, model.fm.sum, model.bm.sum, train_acc, val_acc, test_acc, best_time))
+  except:
+        pass
+
   print('best val accuracy {:03f} with test accuracy {:03f} at epoch {:d} and best time {:03f}'.format(val_acc, test_acc,
                                                                                                      best_epoch,
                                                                                                      best_time))
+  mean_fw_nfe = np.array(fw_nfe_ls).mean()
+  mean_run_time = np.array(run_time_ls).mean()
+  min_run_time = min(run_time_ls)
+  max_run_time = max(run_time_ls)
+
+  # Store run history variables
+  with open("tests/history.csv", "a") as f:
+      f.write(f"{opt['time']},{opt['alpha_']},{opt['clip_bound']},{best_val_acc},{best_test_acc},{mean_fw_nfe},{mean_run_time},{min_run_time},{max_run_time}\n")
+
   return train_acc, val_acc, test_acc
 
 
@@ -278,7 +330,7 @@ if __name__ == '__main__':
                       help='apply sigmoid before multiplying by alpha')
   parser.add_argument('--beta_dim', type=str, default='sc', help='choose either scalar (sc) or vector (vc) beta')
   parser.add_argument('--block', type=str, default='constant', help='constant, mixed, attention, hard_attention')
-  parser.add_argument('--function', type=str, default='laplacian', help='laplacian, transformer, dorsey, GAT')
+  parser.add_argument('--function', type=str, default='ext_laplacian', help='laplacian, transformer, dorsey, GAT')
   parser.add_argument('--use_mlp', dest='use_mlp', action='store_true',
                       help='Add a fully connected layer to the encoder.')
   parser.add_argument('--add_source', dest='add_source', action='store_true',
@@ -393,9 +445,16 @@ if __name__ == '__main__':
 
   parser.add_argument('--pos_dist_quantile', type=float, default=0.001, help="percentage of N**2 edges to keep")
 
+  # Experiment mode - do not overwrite command options with best params
+  parser.add_argument("--experiment", action="store_true", help="Turn on or off experiment mode.")
+  parser.add_argument("--run_name", required=False, default=None, help="Run ID for wandb project")
+  parser.add_argument("--run_notes", required=False, default=None, help="Additional description of the run")
+
+  # For extended laplacian functions with clipping bounds.
+  parser.add_argument("--alpha_", type=float, required=False, default=1.0, help='Alpha value')
+  parser.add_argument("--clip_bound", type=float, required=False, default=0.05, help='Norm clipping bound')
 
   args = parser.parse_args()
 
   opt = vars(args)
-
   main(opt)
