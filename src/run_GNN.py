@@ -194,6 +194,10 @@ def main(cmd_opt):
     opt['time'] = cmd_opt['time']
     opt['alpha_'] = cmd_opt['alpha_']
     opt['clip_bound'] = cmd_opt['clip_bound']
+    opt['num_splits'] = cmd_opt['num_splits']
+    opt['geom_gcn_splits'] = cmd_opt['geom_gcn_splits']
+    opt['planetoid_split'] = cmd_opt['planetoid_split']
+    opt['num_random_seeds'] = cmd_opt['num_random_seeds']
 
   print('[INFO] ODE function : ', opt['function'])
   print('[INFO] Block type : ', opt['block'])
@@ -220,7 +224,7 @@ def main(cmd_opt):
     model = GNN(opt, dataset, device).to(device) if opt["no_early"] else GNNEarly(opt, dataset, device).to(device)
 
   if not opt['planetoid_split'] and opt['dataset'] in ['Cora','Citeseer','Pubmed']:
-    dataset.data = set_train_val_test_split(np.random.randint(0, 1000), dataset.data, num_development=5000 if opt["dataset"] == "CoauthorCS" else 1500)
+    dataset.data = set_train_val_test_split(np.random.randint(0, 1000), dataset.data, num_development=5000 if opt["dataset"] == "CoauthorCS" else 1500, num_per_class=opt['num_random_seeds'])
 
   data = dataset.data.to(device)
 
@@ -313,6 +317,14 @@ if __name__ == '__main__':
                       help='% of training labels to use when --use_labels is set.')
   parser.add_argument('--planetoid_split', action='store_true',
                       help='use planetoid splits for Cora/Citeseer/Pubmed')
+  parser.add_argument('--geom_gcn_splits', dest='geom_gcn_splits', action='store_true',
+                      help='use the 10 fixed splits from '
+                           'https://arxiv.org/abs/2002.05287')
+  parser.add_argument('--num_splits', type=int, dest='num_splits', default=1,
+                      help='the number of splits to repeat the results on')
+  parser.add_argument('--num_random_seeds', type=int, default=20, 
+                      help='Number of random seeds per class')
+
   # GNN args
   parser.add_argument('--hidden_dim', type=int, default=16, help='Hidden dimension.')
   parser.add_argument('--fc_out', dest='fc_out', action='store_true',
