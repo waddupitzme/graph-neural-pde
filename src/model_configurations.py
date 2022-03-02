@@ -9,6 +9,7 @@ from block_constant import ConstantODEblock
 from block_mixed import MixedODEblock
 from block_transformer_hard_attention import HardAttODEblock
 from block_transformer_rewiring import RewireAttODEblock
+from block_constant_accumulated_gradient import ConstantAccumulatedGradientODEblock #added accumulated gradient block
 
 class BlockNotDefined(Exception):
   pass
@@ -29,6 +30,8 @@ def set_block(opt):
     block = RewireAttODEblock
   elif ode_str == 'constant':
     block = ConstantODEblock
+  elif ode_str == 'accumulated_gradient':
+    block = ConstantAccumulatedGradientODEblock
   else:
     raise BlockNotDefined
   return block
