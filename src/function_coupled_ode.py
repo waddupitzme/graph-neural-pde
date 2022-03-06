@@ -15,7 +15,10 @@ from utils import MaxNFEException
 class CoupledODEFunc(ODEFunc):
 
   # currently requires in_features = out_features
-  def __init__(self, in_features, out_features, opt, data, device, alpha_=0.05):
+  def __init__(self, in_features, out_features, opt, data, device, alpha_=0.9):
+    ## 1. Try with alpha = [0.5, 0.9] ##
+    ## 2. Log the value of ||v|| to see if it explodes ##
+    ## 3. Clip ||v|| ##
     super(CoupledODEFunc, self).__init__(opt, data, device)
 
     self.in_features = in_features
