@@ -4,12 +4,13 @@ from function_laplacian_diffusion import LaplacianODEFunc
 from function_laplacian_diffusion import ExtendedLaplacianODEFunc
 from function_laplacian_diffusion import ExtendedLaplacianODEFunc2
 from function_laplacian_diffusion import ExtendedLaplacianODEFunc3
+from function_coupled_ode import CoupledODEFunc 
 from block_transformer_attention import AttODEblock
 from block_constant import ConstantODEblock
 from block_mixed import MixedODEblock
 from block_transformer_hard_attention import HardAttODEblock
 from block_transformer_rewiring import RewireAttODEblock
-from block_constant_accumulated_gradient import ConstantAccumulatedGradientODEblock #added accumulated gradient block
+from block_coupled_ode import CoupledODEBlock
 
 class BlockNotDefined(Exception):
   pass
@@ -30,8 +31,8 @@ def set_block(opt):
     block = RewireAttODEblock
   elif ode_str == 'constant':
     block = ConstantODEblock
-  elif ode_str == 'accumulated_gradient':
-    block = ConstantAccumulatedGradientODEblock
+  elif ode_str == 'coupled':
+    block = CoupledODEBlock
   else:
     raise BlockNotDefined
   return block
@@ -56,6 +57,8 @@ def set_function(opt):
     ExtendedLaplacianODEFunc3.alpha_ = opt['alpha_']
     ExtendedLaplacianODEFunc3.clipping_bound = opt['clip_bound']
     f = ExtendedLaplacianODEFunc3
+  elif ode_str == 'coupled': # Coupled ODE 
+    f = CoupledODEFunc
   else:
     raise FunctionNotDefined
   return f

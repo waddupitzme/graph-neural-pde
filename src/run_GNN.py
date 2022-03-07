@@ -1,4 +1,6 @@
 import wandb
+import sys
+import traceback
 import argparse
 import numpy as np
 import torch
@@ -66,6 +68,7 @@ def train(model, optimizer, data, pos_encoding=None):
     train_pred_idx = data.train_mask
 
   out = model(feat, pos_encoding)
+  print(out)
 
   if model.opt['dataset'] == 'ogbn-arxiv':
     lf = torch.nn.functional.nll_loss
@@ -194,6 +197,10 @@ def main(cmd_opt):
     opt['time'] = cmd_opt['time']
     opt['alpha_'] = cmd_opt['alpha_']
     opt['clip_bound'] = cmd_opt['clip_bound']
+    opt['num_splits'] = cmd_opt['num_splits']
+    opt['geom_gcn_splits'] = cmd_opt['geom_gcn_splits']
+    opt['planetoid_split'] = cmd_opt['planetoid_split']
+    opt['num_random_seeds'] = cmd_opt['num_random_seeds']
 
   print('[INFO] ODE function : ', opt['function'])
   print('[INFO] Block type : ', opt['block'])
@@ -220,7 +227,7 @@ def main(cmd_opt):
     model = GNN(opt, dataset, device).to(device) if opt["no_early"] else GNNEarly(opt, dataset, device).to(device)
 
   if not opt['planetoid_split'] and opt['dataset'] in ['Cora','Citeseer','Pubmed']:
-    dataset.data = set_train_val_test_split(np.random.randint(0, 1000), dataset.data, num_development=5000 if opt["dataset"] == "CoauthorCS" else 1500)
+    dataset.data = set_train_val_test_split(np.random.randint(0, 1000), dataset.data, num_development=5000 if opt["dataset"] == "CoauthorCS" else 1500, num_per_class=opt['num_random_seeds'])
 
   data = dataset.data.to(device)
 
@@ -231,44 +238,70 @@ def main(cmd_opt):
 
   this_test = test_OGB if opt['dataset'] == 'ogbn-arxiv' else test
 
-  for epoch in range(1, opt['epoch']):
-    start_time = time.time()
+  # Record best val_acc and test_acc
+  best_val_acc = 0.0
+  best_test_acc = 0.0
+  run_time_ls = []
+  fw_nfe_ls = []
 
-    if opt['rewire_KNN'] and epoch % opt['rewire_KNN_epoch'] == 0 and epoch != 0:
-      ei = apply_KNN(data, pos_encoding, model, opt)
-      model.odeblock.odefunc.edge_index = ei
+  try:
+      for epoch in range(1, opt['epoch']):
+        start_time = time.time()
 
-    loss = train(model, optimizer, data, pos_encoding)
-    tmp_train_acc, tmp_val_acc, tmp_test_acc = this_test(model, data, pos_encoding, opt)
+        if opt['rewire_KNN'] and epoch % opt['rewire_KNN_epoch'] == 0 and epoch != 0:
+          ei = apply_KNN(data, pos_encoding, model, opt)
+          model.odeblock.odefunc.edge_index = ei
 
-    best_time = opt['time']
-    if tmp_val_acc > val_acc:
-      best_epoch = epoch
-      train_acc = tmp_train_acc
-      val_acc = tmp_val_acc
-      test_acc = tmp_test_acc
-      best_time = opt['time']
-    if not opt['no_early'] and model.odeblock.test_integrator.solver.best_val > val_acc:
-      best_epoch = epoch
-      val_acc = model.odeblock.test_integrator.solver.best_val
-      test_acc = model.odeblock.test_integrator.solver.best_test
-      train_acc = model.odeblock.test_integrator.solver.best_train
-      best_time = model.odeblock.test_integrator.solver.best_time
+        loss = train(model, optimizer, data, pos_encoding)
+        tmp_train_acc, tmp_val_acc, tmp_test_acc = this_test(model, data, pos_encoding, opt)
 
-    log = 'Epoch: {:03d}, Runtime {:03f}, Loss {:03f}, forward nfe {:d}, backward nfe {:d}, Train: {:.4f}, Val: {:.4f}, Test: {:.4f}, Best time: {:.4f}'
-    
-    wandb.log({
-        'run_time' : time.time() - start_time,
-        'loss' : loss,
-        'train_acc' : train_acc,
-        'val_acc' : val_acc,
-        'test_acc' : test_acc
-    })
+        best_time = opt['time']
+        if tmp_val_acc > val_acc:
+          best_epoch = epoch
+          train_acc = tmp_train_acc
+          val_acc = tmp_val_acc
+          test_acc = tmp_test_acc
+          best_time = opt['time']
+        if not opt['no_early'] and model.odeblock.test_integrator.solver.best_val > val_acc:
+          best_epoch = epoch
+          val_acc = model.odeblock.test_integrator.solver.best_val
+          test_acc = model.odeblock.test_integrator.solver.best_test
+          train_acc = model.odeblock.test_integrator.solver.best_train
+          best_time = model.odeblock.test_integrator.solver.best_time
 
-    print(log.format(epoch, time.time() - start_time, loss, model.fm.sum, model.bm.sum, train_acc, val_acc, test_acc, best_time))
+        log = 'Epoch: {:03d}, Runtime {:03f}, Loss {:03f}, forward nfe {:d}, backward nfe {:d}, Train: {:.4f}, Val: {:.4f}, Test: {:.4f}, Best time: {:.4f}'
+        
+        wandb.log({
+            'run_time' : time.time() - start_time,
+            'loss' : loss,
+            'train_acc' : train_acc,
+            'val_acc' : val_acc,
+            'test_acc' : test_acc,
+            'forward_nfe' : model.fm.sum
+        })
+
+        fw_nfe_ls.append(model.fm.sum)
+        run_time_ls.append(time.time() - start_time)
+
+        if(best_val_acc < val_acc): best_val_acc = val_acc
+        if(best_test_acc < test_acc) : best_test_acc = test_acc
+
+        print(log.format(epoch, time.time() - start_time, loss, model.fm.sum, model.bm.sum, train_acc, val_acc, test_acc, best_time))
+  except:
+        traceback.print_exc(file=sys.stdout)
+
   print('best val accuracy {:03f} with test accuracy {:03f} at epoch {:d} and best time {:03f}'.format(val_acc, test_acc,
                                                                                                      best_epoch,
                                                                                                      best_time))
+  mean_fw_nfe = np.array(fw_nfe_ls).mean()
+  mean_run_time = np.array(run_time_ls).mean()
+  min_run_time = min(run_time_ls)
+  max_run_time = max(run_time_ls)
+
+  # Store run history variables
+  with open("tests/history.csv", "a") as f:
+      f.write(f"{opt['time']},{opt['alpha_']},{opt['clip_bound']},{best_val_acc},{best_test_acc},{mean_fw_nfe},{mean_run_time},{min_run_time},{max_run_time}\n")
+
   return train_acc, val_acc, test_acc
 
 
@@ -287,6 +320,14 @@ if __name__ == '__main__':
                       help='% of training labels to use when --use_labels is set.')
   parser.add_argument('--planetoid_split', action='store_true',
                       help='use planetoid splits for Cora/Citeseer/Pubmed')
+  parser.add_argument('--geom_gcn_splits', dest='geom_gcn_splits', action='store_true',
+                      help='use the 10 fixed splits from '
+                           'https://arxiv.org/abs/2002.05287')
+  parser.add_argument('--num_splits', type=int, dest='num_splits', default=1,
+                      help='the number of splits to repeat the results on')
+  parser.add_argument('--num_random_seeds', type=int, default=20, 
+                      help='Number of random seeds per class')
+
   # GNN args
   parser.add_argument('--hidden_dim', type=int, default=16, help='Hidden dimension.')
   parser.add_argument('--fc_out', dest='fc_out', action='store_true',
