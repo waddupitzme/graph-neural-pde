@@ -4,6 +4,7 @@ from function_laplacian_diffusion import LaplacianODEFunc
 from function_laplacian_diffusion import ExtendedLaplacianODEFunc
 from function_laplacian_diffusion import ExtendedLaplacianODEFunc2
 from function_laplacian_diffusion import ExtendedLaplacianODEFunc3
+from function_laplacian_diffusion import NormLaplacianODEFunc
 from function_coupled_ode import CoupledODEFunc 
 from block_transformer_attention import AttODEblock
 from block_constant import ConstantODEblock
@@ -59,6 +60,8 @@ def set_function(opt):
     f = ExtendedLaplacianODEFunc3
   elif ode_str == 'coupled': # Coupled ODE 
     f = CoupledODEFunc
+  elif ode_str == 'laplacian_norm':
+    f = NormLaplacianODEFunc
   else:
     raise FunctionNotDefined
   return f
