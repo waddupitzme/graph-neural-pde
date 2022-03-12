@@ -254,6 +254,8 @@ def train_ray_rand(opt, checkpoint_dir=None, data_dir="../data"):
 
         print(f'\n    -> Mean loss : {loss_mean:.4f}, Mean train acc : {train_accs_mean:.4f}, Mean val acc : {val_accs_mean:.4f}, Mean test acc : {test_accs_mean:.4f}')
         print(f'    -> Std loss : {loss_std:.4f}, Std train acc : {train_accs_std:.4f}, Std val acc : {val_accs_std:.4f}, Std test acc : {test_accs_std:.4f}')
+        print(f'    -> All val accuracies : ', val_accs)
+        print(f'    -> All test accuracies : ', tmp_test_accs)
 
         # Log training details in a history file
         with open(f"tests/{opt['function']}_split_test_history.csv", "a") as f:

@@ -31,6 +31,6 @@ for alpha in alphas:
         cmd_ = cmd.format(args['function'], alpha, bound, alpha, bound).replace("\n", "").replace("\t", "")
         
         print(cmd_)
-        os.system(cmd_)
+        # os.system(cmd_)
 
     
