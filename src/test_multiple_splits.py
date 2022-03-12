@@ -230,6 +230,10 @@ def train_ray_rand(opt, checkpoint_dir=None, data_dir="../data"):
         optimizer = get_optimizer(opt["optimizer"], parameters, lr=opt["lr"], weight_decay=opt["decay"])
         optimizers.append(optimizer)
 
+    # Write header for log file
+    with open(f"tests/{opt['function']}_split_test_history.csv", "w") as f:
+        f.write("epoch,mean_loss,std_loss,mean_train_acc,std_train_acc,mean_val_acc,std_val_acc,mean_test_acc,std_test_acc\n")
+
     for epoch in range(1, opt["epoch"]):
         losses = []
 
@@ -250,6 +254,11 @@ def train_ray_rand(opt, checkpoint_dir=None, data_dir="../data"):
 
         print(f'\n    -> Mean loss : {loss_mean:.4f}, Mean train acc : {train_accs_mean:.4f}, Mean val acc : {val_accs_mean:.4f}, Mean test acc : {test_accs_mean:.4f}')
         print(f'    -> Std loss : {loss_std:.4f}, Std train acc : {train_accs_std:.4f}, Std val acc : {val_accs_std:.4f}, Std test acc : {test_accs_std:.4f}')
+
+        # Log training details in a history file
+        with open(f"tests/{opt['function']}_split_test_history.csv", "a") as f:
+            print(f"[INFO] Logging into {opt['function']}_split_test_history.csv ...\n")
+            f.write(f"{epoch},{loss_mean},{loss_std},{train_accs_mean},{train_accs_std},{val_accs_mean},{val_accs_std},{test_accs_mean},{test_accs_std}\n")
 
 def main(cmd_opt):
   best_opt = best_params_dict[cmd_opt['dataset']]
