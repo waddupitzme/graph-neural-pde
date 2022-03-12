@@ -265,17 +265,16 @@ def main(cmd_opt):
   opt = {**cmd_opt, **best_opt}
 
   print('[INFO] Testing multiple split methods, Experiment mode is : ', 'ON' if opt['experiment'] else 'OFF')
-  if(cmd_opt['experiment']):
-    opt['function'] = cmd_opt['function']
-    opt['block'] = cmd_opt['block']
-    opt['run_name'] = cmd_opt['run_name']
-    opt['time'] = cmd_opt['time']
-    opt['alpha_'] = cmd_opt['alpha_']
-    opt['clip_bound'] = cmd_opt['clip_bound']
-    opt['num_splits'] = cmd_opt['num_splits']
-    opt['geom_gcn_splits'] = cmd_opt['geom_gcn_splits']
-    opt['planetoid_split'] = cmd_opt['planetoid_split']
-    opt['num_random_seeds'] = cmd_opt['num_random_seeds']
+  opt['function'] = cmd_opt['function']
+  opt['block'] = cmd_opt['block']
+  opt['run_name'] = cmd_opt['run_name']
+  opt['time'] = cmd_opt['time']
+  opt['alpha_'] = cmd_opt['alpha_']
+  opt['clip_bound'] = cmd_opt['clip_bound'] 
+  opt['num_splits'] = cmd_opt['num_splits']
+  opt['geom_gcn_splits'] = cmd_opt['geom_gcn_splits']
+  opt['planetoid_split'] = cmd_opt['planetoid_split']
+  opt['num_random_seeds'] = cmd_opt['num_random_seeds']
 
   print('[INFO] ODE function : ', opt['function'])
   print('[INFO] Block type : ', opt['block'])
