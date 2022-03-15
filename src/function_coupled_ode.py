@@ -55,7 +55,9 @@ class CoupledODEFunc(ODEFunc):
       alpha = self.alpha_train
 
     nabla_f = alpha * (ax - x)
-    
+    print('printing v',v)
+    # v = torch.clamp(v, min = -0.5, max = 0.5)
+    # v = v/torch.max(v)
     v_p = self.alpha_ * (nabla_f**2 - v)
     x_p = -nabla_f * (v ** 0.5)
 
