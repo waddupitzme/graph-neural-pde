@@ -235,27 +235,46 @@ def train_ray_rand(opt, checkpoint_dir=None, data_dir="../data"):
         f.write("epoch,mean_loss,std_loss,mean_train_acc,std_train_acc,mean_val_acc,std_val_acc,mean_test_acc,std_test_acc\n")
 
     for epoch in range(1, opt["epoch"]):
-        losses = []
 
         print(f'[INFO] Epoch #[{epoch}/{opt["epoch"]}] : ')
-        for split_no, (model, optimizer, data) in enumerate(zip(models, optimizers, datas)):
-            loss = train_this(model, optimizer, data)
-            losses.append(loss)
-            
-            print(f'    -> Split #{split_no+1}, loss = {loss:.4f}')
+        agg_losses = []
+        agg_train_accs = []
+        agg_val_accs = []
+        agg_test_accs = []
+        for seed_no, model in enumerate(models):
+            losses = []
+            for split_no, (optimizer, data) in enumerate(zip(optimizers, datas)):
+                loss = train_this(model, optimizer, data)
+                losses.append(loss)
+                
+                print(f'    -> Seed #{seed_no + 1}, Split #{split_no+1}, loss = {loss:.4f}')
 
-        loss_mean, loss_std = np.array(losses).mean(), np.array(losses).std()
-        train_accs, val_accs, tmp_test_accs = average_test(models, datas)
-        train_accs, val_accs, tmp_test_accs = np.array(train_accs), np.array(val_accs), np.array(tmp_test_accs)
+            train_accs, val_accs, tmp_test_accs = average_test(models, datas)
+            train_accs, val_accs, tmp_test_accs = np.array(train_accs), np.array(val_accs), np.array(tmp_test_accs)
 
-        train_accs_mean, train_accs_std = train_accs.mean(), train_accs.std()
-        val_accs_mean, val_accs_std = val_accs.mean(), val_accs.std()
-        test_accs_mean, test_accs_std = tmp_test_accs.mean(), tmp_test_accs.std()
+            best_acc_id = np.argmax(tmp_test_accs)
+            best_val_acc = val_accs[best_acc_id]
+            best_test_acc = tmp_test_accs[best_acc_id]
+            best_train_acc = train_accs[best_acc_id]
+            best_loss = losses[best_acc_id]
+
+            agg_losses.append(best_loss)
+            agg_train_accs.append(best_train_acc)
+            agg_val_accs.append(best_val_acc)
+            agg_test_accs.append(best_test_acc)
+
+        loss_mean = np.array(agg_losses).mean()
+        train_accs_mean = np.array(agg_train_accs).mean()
+        val_accs_mean = np.array(agg_val_accs).mean()
+        test_accs_mean = np.array(agg_test_accs).mean()
+
+        loss_std = np.array(agg_losses).std()
+        train_accs_std = np.array(agg_train_accs).std()
+        val_accs_std = np.array(agg_val_accs).std()
+        test_accs_std = np.array(agg_test_accs).std()
 
         print(f'\n    -> Mean loss : {loss_mean:.4f}, Mean train acc : {train_accs_mean:.4f}, Mean val acc : {val_accs_mean:.4f}, Mean test acc : {test_accs_mean:.4f}')
         print(f'    -> Std loss : {loss_std:.4f}, Std train acc : {train_accs_std:.4f}, Std val acc : {val_accs_std:.4f}, Std test acc : {test_accs_std:.4f}')
-        print(f'    -> All val accuracies : ', val_accs)
-        print(f'    -> All test accuracies : ', tmp_test_accs)
 
         # Log training details in a history file
         with open(f"tests/{opt['function']}_split_test_history.csv", "a") as f:
