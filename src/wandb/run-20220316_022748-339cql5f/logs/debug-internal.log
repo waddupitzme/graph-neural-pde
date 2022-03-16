@@ -1,0 +1,68 @@
+2022-03-16 02:27:49,392 INFO    MainThread:806 [internal.py:wandb_internal():91] W&B internal server running at pid: 806, started at: 2022-03-16 02:27:49.392557
+2022-03-16 02:27:49,395 INFO    WriterThread:806 [datastore.py:open_for_write():77] open: /workspace/graph-neural-pde/src/wandb/run-20220316_022748-339cql5f/run-339cql5f.wandb
+2022-03-16 02:27:49,396 DEBUG   HandlerThread:806 [handler.py:handle_request():120] handle_request: check_version
+2022-03-16 02:27:49,398 DEBUG   SenderThread:806 [sender.py:send():160] send: header
+2022-03-16 02:27:49,398 DEBUG   SenderThread:806 [sender.py:send():160] send: request
+2022-03-16 02:27:49,398 DEBUG   SenderThread:806 [sender.py:send_request():169] send_request: check_version
+2022-03-16 02:27:49,657 DEBUG   SenderThread:806 [sender.py:send():160] send: run
+2022-03-16 02:27:53,232 ERROR   SenderThread:806 [retry.py:__call__():111] Retry attempt failed:
+Traceback (most recent call last):
+  File "/opt/conda/lib/python3.6/site-packages/urllib3/connectionpool.py", line 677, in urlopen
+    chunked=chunked,
+  File "/opt/conda/lib/python3.6/site-packages/urllib3/connectionpool.py", line 381, in _make_request
+    self._validate_conn(conn)
+  File "/opt/conda/lib/python3.6/site-packages/urllib3/connectionpool.py", line 978, in _validate_conn
+    conn.connect()
+  File "/opt/conda/lib/python3.6/site-packages/urllib3/connection.py", line 371, in connect
+    ssl_context=context,
+  File "/opt/conda/lib/python3.6/site-packages/urllib3/util/ssl_.py", line 386, in ssl_wrap_socket
+    return context.wrap_socket(sock, server_hostname=server_hostname)
+  File "/opt/conda/lib/python3.6/ssl.py", line 407, in wrap_socket
+    _context=self, _session=session)
+  File "/opt/conda/lib/python3.6/ssl.py", line 817, in __init__
+    self.do_handshake()
+  File "/opt/conda/lib/python3.6/ssl.py", line 1077, in do_handshake
+    self._sslobj.do_handshake()
+  File "/opt/conda/lib/python3.6/ssl.py", line 689, in do_handshake
+    self._sslobj.do_handshake()
+ssl.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:852)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/conda/lib/python3.6/site-packages/requests/adapters.py", line 449, in send
+    timeout=timeout
+  File "/opt/conda/lib/python3.6/site-packages/urllib3/connectionpool.py", line 727, in urlopen
+    method, url, error=e, _pool=self, _stacktrace=sys.exc_info()[2]
+  File "/opt/conda/lib/python3.6/site-packages/urllib3/util/retry.py", line 446, in increment
+    raise MaxRetryError(_pool, url, error or ResponseError(cause))
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='api.wandb.ai', port=443): Max retries exceeded with url: /graphql (Caused by SSLError(SSLError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:852)'),))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/conda/lib/python3.6/site-packages/wandb/old/retry.py", line 96, in __call__
+    result = self._call_fn(*args, **kwargs)
+  File "/opt/conda/lib/python3.6/site-packages/wandb/sdk/internal/internal_api.py", line 124, in execute
+    return self.client.execute(*args, **kwargs)
+  File "/opt/conda/lib/python3.6/site-packages/wandb/vendor/gql-0.2.0/gql/client.py", line 52, in execute
+    result = self._get_result(document, *args, **kwargs)
+  File "/opt/conda/lib/python3.6/site-packages/wandb/vendor/gql-0.2.0/gql/client.py", line 60, in _get_result
+    return self.transport.execute(document, *args, **kwargs)
+  File "/opt/conda/lib/python3.6/site-packages/wandb/vendor/gql-0.2.0/gql/transport/requests.py", line 38, in execute
+    request = requests.post(self.url, **post_args)
+  File "/opt/conda/lib/python3.6/site-packages/requests/api.py", line 119, in post
+    return request('post', url, data=data, json=json, **kwargs)
+  File "/opt/conda/lib/python3.6/site-packages/requests/api.py", line 61, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/opt/conda/lib/python3.6/site-packages/requests/sessions.py", line 530, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/opt/conda/lib/python3.6/site-packages/requests/sessions.py", line 643, in send
+    r = adapter.send(request, **kwargs)
+  File "/opt/conda/lib/python3.6/site-packages/requests/adapters.py", line 514, in send
+    raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='api.wandb.ai', port=443): Max retries exceeded with url: /graphql (Caused by SSLError(SSLError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:852)'),))
+2022-03-16 02:28:19,659 DEBUG   HandlerThread:806 [handler.py:handle_request():120] handle_request: shutdown
+2022-03-16 02:28:19,659 INFO    HandlerThread:806 [handler.py:finish():624] shutting down handler
+2022-03-16 02:28:19,666 INFO    WriterThread:806 [datastore.py:close():258] close: /workspace/graph-neural-pde/src/wandb/run-20220316_022748-339cql5f/run-339cql5f.wandb
+2022-03-16 04:23:21,493 INFO    MainThread:806 [internal.py:handle_exit():78] Internal process exited
