@@ -4,7 +4,6 @@ import traceback
 import argparse
 import numpy as np
 import torch
-from torch_geometric.nn import GCNConv, ChebConv  # noqa
 import torch.nn.functional as F
 from GNN import GNN
 from GNN_early import GNNEarly
