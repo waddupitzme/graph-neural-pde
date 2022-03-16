@@ -243,29 +243,41 @@ def train_ray_rand(opt, checkpoint_dir=None, data_dir="../data"):
         agg_test_accs = []
         for seed_no, model in enumerate(models):
             try:
-                losses = []
+                # For each seed, record metrics for all splits
+                losses, train_accs, val_accs, tmp_test_accs = [], [], [], []
+                
                 for split_no, (optimizer, data) in enumerate(zip(optimizers, datas)):
                     loss = train_this(model, optimizer, data)
                     losses.append(loss)
-                    
-                    print(f'    -> Seed #{seed_no + 1}, Split #{split_no+1}, loss = {loss:.4f}')
 
-                train_accs, val_accs, tmp_test_accs = average_test(models, datas)
-                train_accs, val_accs, tmp_test_accs = np.array(train_accs), np.array(val_accs), np.array(tmp_test_accs)
+                    train_acc, val_acc, tmp_test_acc = test(model, data)
+                    train_accs.append(train_acc)
+                    val_accs.append(val_acc)
+                    tmp_test_accs.append(tmp_test_acc)
 
-                best_acc_id = np.argmax(tmp_test_accs)
-                best_val_acc = val_accs[best_acc_id]
-                best_test_acc = tmp_test_accs[best_acc_id]
-                best_train_acc = train_accs[best_acc_id]
-                best_loss = losses[best_acc_id]
+                    print(f'    -> Seed #{seed_no + 1}, Split #{split_no+1}, loss = {loss:.4f}, val_acc = {val_acc:.4f}, test_acc = {tmp_test_acc:.4f}')
 
-                agg_losses.append(best_loss)
-                agg_train_accs.append(best_train_acc)
-                agg_val_accs.append(best_val_acc)
-                agg_test_accs.append(best_test_acc)
+            except KeyboardInterrupt:
+                print('[INFO] Interrupted ...')
             except:
+                traceback.print_exc(file=sys.stdout)
                 continue
 
+            # Metrics for all splits are recorded, take the ones with best test accuracy
+            train_accs, val_accs, tmp_test_accs = np.array(train_accs), np.array(val_accs), np.array(tmp_test_accs)
+
+            best_acc_id = np.argmax(tmp_test_accs)
+            best_val_acc = val_accs[best_acc_id]
+            best_test_acc = tmp_test_accs[best_acc_id]
+            best_train_acc = train_accs[best_acc_id]
+            best_loss = min(losses) # [best_acc_id]
+
+            agg_losses.append(best_loss)
+            agg_train_accs.append(best_train_acc)
+            agg_val_accs.append(best_val_acc)
+            agg_test_accs.append(best_test_acc)
+
+        # Mean over the best metrics of all seeds
         loss_mean = np.array(agg_losses).mean()
         train_accs_mean = np.array(agg_train_accs).mean()
         val_accs_mean = np.array(agg_val_accs).mean()
