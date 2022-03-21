@@ -209,6 +209,7 @@ def train_ray_rand(opt, checkpoint_dir=None, data_dir="../data"):
     for split in range(opt["num_splits"]):
         dataset.data = set_train_val_test_split(
             np.random.randint(0, 1000), dataset.data, num_development=5000 if opt["dataset"] == "CoauthorCS" else 1500)
+        dataset.data.to(device)
         datas.append(dataset.data)
 
     # Initialize seeds
