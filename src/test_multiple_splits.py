@@ -1,5 +1,6 @@
 # Used for testing the model for different splitting methods
 import sys
+import copy
 import traceback
 import argparse
 import numpy as np
@@ -196,6 +197,7 @@ def average_test(models, datas):
     return train_accs, val_accs, tmp_test_accs
 
 def train_ray_rand(opt, checkpoint_dir=None, data_dir="../data"):
+    num_seeds = 10
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     dataset = get_dataset(opt, data_dir, opt['not_lcc'])
 
@@ -203,11 +205,16 @@ def train_ray_rand(opt, checkpoint_dir=None, data_dir="../data"):
     datas = []
     optimizers = []
 
+    # Initialize splits
     for split in range(opt["num_splits"]):
         dataset.data = set_train_val_test_split(
             np.random.randint(0, 1000), dataset.data, num_development=5000 if opt["dataset"] == "CoauthorCS" else 1500)
         datas.append(dataset.data)
 
+    # Initialize seeds
+    models_ = {i:[] for i in range(num_seeds)}
+    optimizers_ = {i:[] for i in range(num_seeds)}
+    for seed_no in range(num_seeds):
         if opt['baseline']:
             opt['num_feature'] = dataset.num_node_features
             opt['num_class'] = dataset.num_classes
@@ -218,16 +225,20 @@ def train_ray_rand(opt, checkpoint_dir=None, data_dir="../data"):
             model = GNN(opt, dataset, device)
             train_this = train
 
-        models.append(model)
-
         if torch.cuda.device_count() > 1:
             model = nn.DataParallel(model)
 
-        model, data = model.to(device), dataset.data.to(device)
-        parameters = [p for p in model.parameters() if p.requires_grad]
+        model = model.to(device)
 
-        optimizer = get_optimizer(opt["optimizer"], parameters, lr=opt["lr"], weight_decay=opt["decay"])
-        optimizers.append(optimizer)
+        for split_no in range(len(datas)):
+            # For each seed copy the model for different splits
+            new_model = copy.deepcopy(model)
+            parameters = [p for p in new_model.parameters() if p.requires_grad]
+            optimizer = get_optimizer(opt["optimizer"], parameters, lr=opt["lr"], weight_decay=opt["decay"])
+
+            models_[seed_no].append(new_model)
+            optimizers_[seed_no].append(optimizer)
+
 
     # Write header for log file
     with open(f"tests/{opt['function']}_split_test_history.csv", "w") as f:
@@ -240,16 +251,16 @@ def train_ray_rand(opt, checkpoint_dir=None, data_dir="../data"):
         agg_train_accs = []
         agg_val_accs = []
         agg_test_accs = []
-        for seed_no, model in enumerate(models):
+        for seed_no in range(num_seeds):
             try:
                 # For each seed, record metrics for all splits
                 losses, train_accs, val_accs, tmp_test_accs = [], [], [], []
                 
-                for split_no, (optimizer, data) in enumerate(zip(optimizers, datas)):
-                    loss = train_this(model, optimizer, data)
+                for split_no, data in enumerate(datas):
+                    loss = train_this(models_[seed_no][split_no], optimizers_[seed_no][split_no], data)
                     losses.append(loss)
 
-                    train_acc, val_acc, tmp_test_acc = test(model, data)
+                    train_acc, val_acc, tmp_test_acc = test(models_[seed_no][split_no], data)
                     train_accs.append(train_acc)
                     val_accs.append(val_acc)
                     tmp_test_accs.append(tmp_test_acc)
