@@ -238,7 +238,6 @@ def train_ray_rand(opt, checkpoint_dir=None, data_dir="../data"):
             optimizer = get_optimizer(opt["optimizer"], parameters, lr=opt["lr"], weight_decay=opt["decay"])
 
             new_model = new_model.to(device)
-            optimizer = optimizer.to(device)
 
             models_[seed_no].append(new_model)
             optimizers_[seed_no].append(optimizer)
