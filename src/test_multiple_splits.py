@@ -236,6 +236,7 @@ def train_ray_rand(opt, checkpoint_dir=None, data_dir="../data"):
             new_model = copy.deepcopy(model)
             parameters = [p for p in new_model.parameters() if p.requires_grad]
             optimizer = get_optimizer(opt["optimizer"], parameters, lr=opt["lr"], weight_decay=opt["decay"])
+            print(optimizer)
 
             new_model = new_model.to(device)
 
@@ -467,6 +468,10 @@ if __name__ == '__main__':
 
   parser.add_argument('--kinetic_energy', type=float, default=None, help="int_t ||f||_2^2")
   parser.add_argument('--directional_penalty', type=float, default=None, help="int_t ||(df/dx)^T f||^2")
+
+  # weight decay args
+  parser.add_argument('--l1_reg', action='store_true', help='Whether to use l1 weight decay or not')
+  parser.add_argument('--l1_weight_decay', type=float, default=0.001, help='l1 weight decay coefficient')
 
   # rewiring args
   parser.add_argument("--not_lcc", action="store_false", help="don't use the largest connected component")

@@ -200,10 +200,14 @@ def main(cmd_opt):
     opt['geom_gcn_splits'] = cmd_opt['geom_gcn_splits']
     opt['planetoid_split'] = cmd_opt['planetoid_split']
     opt['num_random_seeds'] = cmd_opt['num_random_seeds']
+    opt['l1_reg'] = cmd_opt['l1_reg']
+    opt['l1_weight_decay'] = cmd_opt['l1_weight_decay']
 
   print('[INFO] ODE function : ', opt['function'])
   print('[INFO] Block type : ', opt['block'])
   print('[INFO] T value : ', opt['time'])
+  print('[INFO] L1 regularization on : ', opt['l1_reg'])
+  print('[INFO] L1 reg coefficient : ', opt['l1_weight_decay'])
 
   # Initialize wandb
   wandb.init(project=wandb_config['project'], entity=wandb_config['entity'], id=opt['run_name'], notes=opt['run_notes'])
@@ -400,6 +404,10 @@ if __name__ == '__main__':
 
   parser.add_argument('--kinetic_energy', type=float, default=None, help="int_t ||f||_2^2")
   parser.add_argument('--directional_penalty', type=float, default=None, help="int_t ||(df/dx)^T f||^2")
+
+  # weight decay args
+  parser.add_argument('--l1_reg', action='store_true', help='Whether to use l1 weight decay or not')
+  parser.add_argument('--l1_weight_decay', type=float, default=0.001, help='l1 weight decay coefficient')
 
   # rewiring args
   parser.add_argument("--not_lcc", action="store_false", help="don't use the largest connected component")
