@@ -66,7 +66,6 @@ class ConstantODEblock(ODEblock):
       return z, reg_states
     else: 
       z = state_dt[1]
-      print(z.shape)
       return z
 
   def __repr__(self):

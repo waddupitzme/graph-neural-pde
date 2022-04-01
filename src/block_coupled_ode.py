@@ -33,14 +33,14 @@ class CoupledODEBlock(ODEblock):
 
   def forward(self, x):
     t = self.t.type_as(x)
-    v = torch.zeros(size=(x.size(0), x.size(1))).to(x)
+    v = torch.ones(size=(x.size(0), x.size(1))).to(x) * 10
+    x = torch.cat((x, v), dim=1)
 
     integrator = self.train_integrator if self.training else self.test_integrator
-    
     reg_states = tuple( torch.zeros(x.size(0)).to(x) for i in range(self.nreg) )
 
-    func = self.reg_odefunc 
-    state = (torch.cat((x, v), dim=1),)
+    func = self.reg_odefunc if self.training and self.nreg > 0 else self.odefunc
+    state = (x,) + reg_states if self.training and self.nreg > 0 else x
 
     if self.opt["adjoint"] and self.training:
       state_dt = integrator(
@@ -72,7 +72,6 @@ class CoupledODEBlock(ODEblock):
       x = split[0]
       v = split[1]
       
-      print("Shape of z in block : ", z.shape)
       return x 
 
   def __repr__(self):
