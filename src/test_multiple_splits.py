@@ -320,8 +320,8 @@ def train_ray_rand(opt, checkpoint_dir=None, data_dir="../data"):
         print(f'    -> Std loss : {loss_std:.4f}, Std FW NFE : {fw_nfe_std}, Std train acc : {train_accs_std:.4f}, Std val acc : {val_accs_std:.4f}, Std test acc : {test_accs_std:.4f}')
 
         # Log training details in a history file
-        with open(f"tests/{opt['function']}_split_test_history.csv", "a") as f:
-            print(f"[INFO] Logging into {opt['function']}_split_test_history.csv ...\n")
+        with open(f"experiments/{opt['log_file']}", "a") as f:
+            print(f"[INFO] Logging into experiments/{opt['log_file']} ...\n")
             f.write(f"{epoch},{fw_nfe_mean},{fw_nfe_std},{loss_mean},{loss_std},{train_accs_mean},{train_accs_std},{val_accs_mean},{val_accs_std},{test_accs_mean},{test_accs_std}\n")
 
 def main(cmd_opt):
