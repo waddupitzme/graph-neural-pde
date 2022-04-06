@@ -19,6 +19,7 @@ python3 test_multiple_splits.py --dataset Citeseer --function transformer --bloc
 python3 test_multiple_splits.py --dataset Pubmed --function transformer --block constant --num_splits 10 --time 128.0 --experiment --log_file 6_tbl_1_nlr_grand_pubmet.csv
 
 # For Linear DeepGRAND
+# Dataset CORA - table. 1
 python3 test_multiple_splits.py --function ext_laplacian3\
 			  --dataset Cora\
                           --block attention \
@@ -34,6 +35,7 @@ python3 test_multiple_splits.py --function ext_laplacian3\
                           --dropout 0\
 			  --log_file 7_tbl_1_lr_deepgrand_cora.csv
 
+# Dataset CITESEER - table. 1
 python3 test_multiple_splits.py --function ext_laplacian3\
 			  --dataset Citeseer\
                           --block attention \
@@ -49,6 +51,7 @@ python3 test_multiple_splits.py --function ext_laplacian3\
                           --dropout 0\
 			  --log_file 8_tbl_1_lr_deepgrand_citeseer.csv
 
+# Dataset PUBMet - table. 1
 python3 test_multiple_splits.py --function ext_laplacian3\
 			  --dataset Pubmed\
                           --block attention \

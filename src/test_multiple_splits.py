@@ -251,7 +251,7 @@ def train_ray_rand(opt, checkpoint_dir=None, data_dir="../data"):
 
     # Write header for log file
     with open(f"experiments/{opt['log_file']}", "w") as f:
-        f.write("epoch,mean_loss,std_loss,mean_train_acc,std_train_acc,mean_val_acc,std_val_acc,mean_test_acc,std_test_acc\n")
+        f.write("epoch,mean_fw_nfe,std_fw_nfe,mean_loss,std_loss,mean_train_acc,std_train_acc,mean_val_acc,std_val_acc,mean_test_acc,std_test_acc\n")
 
     for epoch in range(1, opt["epoch"]):
 
@@ -260,10 +260,12 @@ def train_ray_rand(opt, checkpoint_dir=None, data_dir="../data"):
         agg_train_accs = []
         agg_val_accs = []
         agg_test_accs = []
+        agg_fw_nfe = []
+
         for seed_no in range(num_seeds):
             try:
                 # For each seed, record metrics for all splits
-                losses, train_accs, val_accs, tmp_test_accs = [], [], [], []
+                losses, train_accs, val_accs, tmp_test_accs, fw_nfe = [], [], [], [], []
                 
                 for split_no, data in enumerate(datas):
                     loss = train_this(models_[seed_no][split_no], optimizers_[seed_no][split_no], data)
@@ -273,6 +275,8 @@ def train_ray_rand(opt, checkpoint_dir=None, data_dir="../data"):
                     train_accs.append(train_acc)
                     val_accs.append(val_acc)
                     tmp_test_accs.append(tmp_test_acc)
+                    fw_nfe.append(models_[seed_no][split_no].fm.sum)
+
 
                     print(f'    -> Seed #{seed_no + 1}, Split #{split_no+1}, loss = {loss:.4f}, val_acc = {val_acc:.4f}, test_acc = {tmp_test_acc:.4f}')
 
@@ -290,30 +294,34 @@ def train_ray_rand(opt, checkpoint_dir=None, data_dir="../data"):
             best_test_acc = tmp_test_accs[best_acc_id]
             best_train_acc = train_accs[best_acc_id]
             best_loss = min(losses) # [best_acc_id]
+            best_fw_nfe = min(fw_nfe)
 
             agg_losses.append(best_loss)
             agg_train_accs.append(best_train_acc)
             agg_val_accs.append(best_val_acc)
             agg_test_accs.append(best_test_acc)
+            agg_fw_nfe.append(best_fw_nfe)
 
         # Mean over the best metrics of all seeds
         loss_mean = np.array(agg_losses).mean()
         train_accs_mean = np.array(agg_train_accs).mean()
         val_accs_mean = np.array(agg_val_accs).mean()
         test_accs_mean = np.array(agg_test_accs).mean()
+        fw_nfe_mean = np.array(agg_fw_nfe).mean()
 
         loss_std = np.array(agg_losses).std()
         train_accs_std = np.array(agg_train_accs).std()
         val_accs_std = np.array(agg_val_accs).std()
         test_accs_std = np.array(agg_test_accs).std()
+        fw_nfe_std = np.array(agg_fw_nfe).std()
 
-        print(f'\n    -> Mean loss : {loss_mean:.4f}, Mean train acc : {train_accs_mean:.4f}, Mean val acc : {val_accs_mean:.4f}, Mean test acc : {test_accs_mean:.4f}')
-        print(f'    -> Std loss : {loss_std:.4f}, Std train acc : {train_accs_std:.4f}, Std val acc : {val_accs_std:.4f}, Std test acc : {test_accs_std:.4f}')
+        print(f'\n    -> Mean loss : {loss_mean:.4f}, Mean FW NFE : {fw_nfe_mean}, Mean train acc : {train_accs_mean:.4f}, Mean val acc : {val_accs_mean:.4f}, Mean test acc : {test_accs_mean:.4f}')
+        print(f'    -> Std loss : {loss_std:.4f}, Std FW NFE : {fw_nfe_std}, Std train acc : {train_accs_std:.4f}, Std val acc : {val_accs_std:.4f}, Std test acc : {test_accs_std:.4f}')
 
         # Log training details in a history file
         with open(f"tests/{opt['function']}_split_test_history.csv", "a") as f:
             print(f"[INFO] Logging into {opt['function']}_split_test_history.csv ...\n")
-            f.write(f"{epoch},{loss_mean},{loss_std},{train_accs_mean},{train_accs_std},{val_accs_mean},{val_accs_std},{test_accs_mean},{test_accs_std}\n")
+            f.write(f"{epoch},{fw_nfe_mean},{fw_nfe_std},{loss_mean},{loss_std},{train_accs_mean},{train_accs_std},{val_accs_mean},{val_accs_std},{test_accs_mean},{test_accs_std}\n")
 
 def main(cmd_opt):
   best_opt = best_params_dict[cmd_opt['dataset']]
