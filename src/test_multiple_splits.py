@@ -339,6 +339,7 @@ def main(cmd_opt):
   opt['geom_gcn_splits'] = cmd_opt['geom_gcn_splits']
   opt['planetoid_split'] = cmd_opt['planetoid_split']
   opt['num_random_seeds'] = cmd_opt['num_random_seeds']
+  opt['epoch'] = cmd_opt['epoch']
 
   print('[INFO] ODE function : ', opt['function'])
   print('[INFO] Block type : ', opt['block'])
