@@ -205,6 +205,11 @@ def train_ray_rand(opt, checkpoint_dir=None, data_dir="../data"):
     datas = []
     optimizers = []
 
+    # Create the log dir if not exists
+    if(not os.path.exists("experiments")):
+        print('[INFO] Creating experiments folder ...')
+        os.mkdir("experiments")
+
     # Initialize splits
     for split in range(opt["num_splits"]):
         dataset.data = set_train_val_test_split(
@@ -245,7 +250,7 @@ def train_ray_rand(opt, checkpoint_dir=None, data_dir="../data"):
 
 
     # Write header for log file
-    with open(f"tests/{opt['function']}_split_test_history.csv", "w") as f:
+    with open(f"experiments/{opt['log_file']}", "w") as f:
         f.write("epoch,mean_loss,std_loss,mean_train_acc,std_train_acc,mean_val_acc,std_val_acc,mean_test_acc,std_test_acc\n")
 
     for epoch in range(1, opt["epoch"]):
@@ -535,6 +540,7 @@ if __name__ == '__main__':
   parser.add_argument("--experiment", action="store_true", help="Turn on or off experiment mode.")
   parser.add_argument("--run_name", required=False, default=None, help="Run ID for wandb project")
   parser.add_argument("--run_notes", required=False, default=None, help="Additional description of the run")
+  parser.add_argument("--log_file", required=True, help="Name of the csv log file")
 
   # For extended laplacian functions with clipping bounds.
   parser.add_argument("--alpha_", type=float, required=False, default=1.0, help='Alpha value')

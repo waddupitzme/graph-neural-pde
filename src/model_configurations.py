@@ -1,4 +1,4 @@
-from function_transformer_attention import ODEFuncTransformerAtt
+from function_transformer_attention import ODEFuncTransformerAtt, ExtendedODEFuncTransformerAtt
 from function_GAT_attention import ODEFuncAtt
 from function_laplacian_diffusion import LaplacianODEFunc
 from function_laplacian_diffusion import ExtendedLaplacianODEFunc
@@ -58,6 +58,10 @@ def set_function(opt):
     ExtendedLaplacianODEFunc3.alpha_ = opt['alpha_']
     ExtendedLaplacianODEFunc3.clipping_bound = opt['clip_bound']
     f = ExtendedLaplacianODEFunc3
+  elif ode_str == 'ext_transformer':
+    ExtendedODEFuncTransformerAtt.alpha_ = opt['alpha_']
+    ExtendedODEFuncTransformerAtt.clipping_bound = opt['clip_bound']
+    f = ExtendedODEFuncTransformerAtt
   elif ode_str == 'coupled': # Coupled ODE 
     f = CoupledODEFunc
   elif ode_str == 'laplacian_norm':
