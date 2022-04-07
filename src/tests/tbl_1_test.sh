@@ -1,26 +1,26 @@
 # For Linear GRAND
 # Dataset CORA - table. 1
-python3 test_multiple_splits.py --dataset Cora --function laplacian --block attention --num_splits 10 --time 128.0 --experiment --log_file 1_tbl_1_lr_grand_cora.csv
+python3 test_multiple_planetoid_splits.py --dataset Cora --function laplacian --block attention --num_splits 10 --time 128.0 --experiment --log_file 1_tbl_1_lr_grand_cora.csv
 
 # Dataset CITESEER - table. 1
-python3 test_multiple_splits.py --dataset Citeseer --function laplacian --block attention --num_splits 10 --time 128.0 --experiment --log_file 2_tbl_1_lr_grand_citeseer.csv
+python3 test_multiple_planetoid_splits.py --dataset Citeseer --function laplacian --block attention --num_splits 10 --time 128.0 --experiment --log_file 2_tbl_1_lr_grand_citeseer.csv
 
 # Dataset PUBMet - table. 1
-python3 test_multiple_splits.py --dataset Pubmed --function laplacian --block attention --num_splits 10 --time 128.0 --experiment --log_file 3_tbl_1_lr_grand_pubmed.csv
+# python3 test_multiple_planetoid_splits.py --dataset Pubmed --function laplacian --block attention --num_splits 10 --time 128.0 --experiment --log_file 3_tbl_1_lr_grand_pubmed.csv
 
 # For Non-Linear GRAND
 # Dataset CORA - table. 1
-python3 test_multiple_splits.py --dataset Cora --function transformer --block constant --num_splits 10 --time 128.0 --experiment --log_file 4_tbl_1_nlr_grand_cora.csv
+python3 test_multiple_planetoid_splits.py --dataset Cora --function transformer --block constant --num_splits 10 --time 128.0 --experiment --log_file 4_tbl_1_nlr_grand_cora.csv
 
 # Dataset CITESEER - table. 1
-python3 test_multiple_splits.py --dataset Citeseer --function transformer --block constant --num_splits 10 --time 128.0 --experiment --log_file 5_tbl_1_nlr_grand_citeseer.csv
+python3 test_multiple_planetoid_splits.py --dataset Citeseer --function transformer --block constant --num_splits 10 --time 128.0 --experiment --log_file 5_tbl_1_nlr_grand_citeseer.csv
 
 # Dataset PUBMed - table. 1
-# python3 test_multiple_splits.py --dataset Pubmed --function transformer --block constant --num_splits 10 --time 128.0 --experiment --log_file 6_tbl_1_nlr_grand_pubmet.csv
+# python3 test_multiple_planetoid_splits.py --dataset Pubmed --function transformer --block constant --num_splits 10 --time 128.0 --experiment --log_file 6_tbl_1_nlr_grand_pubmet.csv
 
 # For Linear DeepGRAND
 # Dataset CORA - table. 1
-python3 test_multiple_splits.py --function ext_laplacian3\
+python3 test_multiple_planetoid_splits.py --function ext_laplacian3\
 			  --dataset Cora\
                           --block attention \
                           --experiment \
@@ -36,7 +36,7 @@ python3 test_multiple_splits.py --function ext_laplacian3\
 			  --log_file 7_tbl_1_lr_deepgrand_cora.csv
 
 # Dataset CITESEER - table. 1
-python3 test_multiple_splits.py --function ext_laplacian3\
+python3 test_multiple_planetoid_splits.py --function ext_laplacian3\
 			  --dataset Citeseer\
                           --block attention \
 			  --attention_type scaled_dot\
@@ -53,7 +53,7 @@ python3 test_multiple_splits.py --function ext_laplacian3\
 			  --log_file 8_tbl_1_lr_deepgrand_citeseer.csv
 
 # Dataset PUBMed - table. 1
-#python3 test_multiple_splits.py --function ext_laplacian3\
+#python3 test_multiple_planetoid_splits.py --function ext_laplacian3\
 #			  --dataset Pubmed\
 #                          --block attention \
 #                          --experiment \

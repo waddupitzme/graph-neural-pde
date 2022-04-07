@@ -1,1 +1,0 @@
-epoch,mean_fw_nfe,std_fw_nfe,mean_loss,std_loss,mean_train_acc,std_train_acc,mean_val_acc,std_val_acc,mean_test_acc,std_test_acc
