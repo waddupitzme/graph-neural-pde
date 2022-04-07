@@ -17,6 +17,9 @@ from ogb.nodeproppred import Evaluator
 from graph_rewiring import apply_KNN, apply_beltrami, apply_edge_sampling
 from best_params import  best_params_dict
 
+import wandb 
+from wandb_conf import wandb_config
+
 def get_optimizer(name, parameters, lr, weight_decay=0):
   if name == 'sgd':
     return torch.optim.SGD(parameters, lr=lr, weight_decay=weight_decay)
@@ -198,6 +201,10 @@ def average_test(models, datas):
     return train_accs, val_accs, tmp_test_accs
 
 def train_ray_rand(opt, checkpoint_dir=None, data_dir="../data"):
+    run_name = opt['log_file'].split('.')[0]
+    wandb.init(project="graph-neural-pde-phase-4", entity="hieubkvn123", id=run_name)
+    wandb.alert(title=f'Run {run_name} started', text=f'Your run {run_name} for project {wandb_config["project"]} has started, conducting with random splits for 10 random seeds and 10 random splits')
+    
     num_seeds = 10
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     dataset = get_dataset(opt, data_dir, opt['not_lcc'])
@@ -319,10 +326,25 @@ def train_ray_rand(opt, checkpoint_dir=None, data_dir="../data"):
         print(f'\n    -> Mean loss : {loss_mean:.4f}, Mean FW NFE : {fw_nfe_mean}, Mean train acc : {train_accs_mean:.4f}, Mean val acc : {val_accs_mean:.4f}, Mean test acc : {test_accs_mean:.4f}')
         print(f'    -> Std loss : {loss_std:.4f}, Std FW NFE : {fw_nfe_std}, Std train acc : {train_accs_std:.4f}, Std val acc : {val_accs_std:.4f}, Std test acc : {test_accs_std:.4f}')
 
+        wandb.log({
+            'loss_mean' : loss_mean,
+            'train_accs_mean' : train_accs_mean,
+            'val_accs_mean' : val_accs_mean,
+            'test_accs_mean' : test_accs_mean,
+            'fw_nfe_mean' : fw_nfe_mean,
+            'loss_std' : loss_std,
+            'train_accs_std' : train_accs_std,
+            'val_accs_std' : val_accs_std,
+            'test_accs_std' : test_accs_std,
+            'fw_nfe_std' : fw_nfe_std
+        })
+
         # Log training details in a history file
         with open(f"experiments/{opt['log_file']}", "a") as f:
             print(f"[INFO] Logging into experiments/{opt['log_file']} ...\n")
             f.write(f"{epoch},{fw_nfe_mean},{fw_nfe_std},{loss_mean},{loss_std},{train_accs_mean},{train_accs_std},{val_accs_mean},{val_accs_std},{test_accs_mean},{test_accs_std}\n")
+
+    wandb.alert(title=f'Run {run_name} ended', text=f'Your run {run_name} for project {wandb_config["project"]} has ended')
 
 def main(cmd_opt):
   best_opt = best_params_dict[cmd_opt['dataset']]

@@ -203,6 +203,7 @@ def average_test(models, datas):
 def train_ray_rand(opt, checkpoint_dir=None, data_dir="../data"):
     run_name = opt['log_file'].split('.')[0]
     wandb.init(project="graph-neural-pde-phase-4", entity="hieubkvn123", id=run_name)
+    wandb.alert(title=f'Run {run_name} started', text=f'Your run {run_name} for project {wandb_config["project"]} has started, conducting with planetoid splits for 20 random seeds')
     num_seeds = 20
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     dataset = get_dataset(opt, data_dir, opt['not_lcc'])
@@ -336,6 +337,8 @@ def train_ray_rand(opt, checkpoint_dir=None, data_dir="../data"):
         with open(f"experiments/{opt['log_file']}", "a") as f:
             print(f"[INFO] Logging into experiments/{opt['log_file']} ...\n")
             f.write(f"{epoch},{fw_nfe_mean},{fw_nfe_std},{loss_mean},{loss_std},{train_accs_mean},{train_accs_std},{val_accs_mean},{val_accs_std},{test_accs_mean},{test_accs_std}\n")
+    
+    wandb.alert(title=f'Run {run_name} ended', text=f'Your run {run_name} for project {wandb_config["project"]} has ended')
 
 def main(cmd_opt):
   best_opt = best_params_dict[cmd_opt['dataset']]
