@@ -199,6 +199,7 @@ def main(cmd_opt):
     opt['num_random_seeds'] = cmd_opt['num_random_seeds']
     opt['l1_reg'] = cmd_opt['l1_reg']
     opt['l1_weight_decay'] = cmd_opt['l1_weight_decay']
+    opt['epoch'] = cmd_opt['epoch']
 
   print('[INFO] ODE function : ', opt['function'])
   print('[INFO] Block type : ', opt['block'])
