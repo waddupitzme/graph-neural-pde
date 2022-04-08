@@ -240,6 +240,7 @@ def main(cmd_opt):
   best_test_acc = 0.0
   run_time_ls = []
   fw_nfe_ls = []
+  train_accs, val_accs, test_accs, losses = [], [], [], []
 
   try:
       for epoch in range(1, opt['epoch']):
@@ -270,6 +271,9 @@ def main(cmd_opt):
         
         fw_nfe_ls.append(model.fm.sum)
         run_time_ls.append(time.time() - start_time)
+        train_accs.append(train_acc)
+        val_accs.append(val_acc)
+        test_accs.append(test_acc)
 
         if(best_val_acc < val_acc): best_val_acc = val_acc
         if(best_test_acc < test_acc) : best_test_acc = test_acc
@@ -290,7 +294,7 @@ def main(cmd_opt):
   with open("tests/history.csv", "a") as f:
       f.write(f"{opt['time']},{opt['alpha_']},{opt['clip_bound']},{best_val_acc},{best_test_acc},{mean_fw_nfe},{mean_run_time},{min_run_time},{max_run_time}\n")
 
-  return train_acc, val_acc, test_acc
+  return fw_nfe_ls, losses, train_accs, val_accs, test_accs
 
 
 if __name__ == '__main__':

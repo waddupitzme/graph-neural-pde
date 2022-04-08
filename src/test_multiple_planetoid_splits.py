@@ -2,6 +2,7 @@
 import os
 import sys
 import copy
+import json
 import traceback
 import argparse
 import numpy as np
@@ -19,6 +20,7 @@ from best_params import  best_params_dict
 
 import wandb
 from wandb_conf import wandb_config
+from run_GNN import main
 
 def get_optimizer(name, parameters, lr, weight_decay=0):
   if name == 'sgd':
@@ -200,209 +202,6 @@ def average_test(models, datas):
 
     return train_accs, val_accs, tmp_test_accs
 
-def train_ray_rand(opt, checkpoint_dir=None, data_dir="../data"):
-    run_name = opt['log_file'].split('.')[0]
-    wandb.init(project="graph-neural-pde-phase-4", entity="hieubkvn123", id=run_name)
-    wandb.alert(title=f'Run {run_name} started', text=f'Your run {run_name} for project {wandb_config["project"]} has started, conducting with planetoid splits for 20 random seeds')
-    num_seeds = 20
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    dataset = get_dataset(opt, data_dir, opt['not_lcc'])
-    dataset.data.to(device)
-
-    datas = [dataset.data]
-
-    models = []
-    optimizers = []
-
-    # Create the log dir if not exists
-    if(not os.path.exists("experiments")):
-        print('[INFO] Creating experiments folder ...')
-        os.mkdir("experiments")
-
-    # Initialize seeds
-    models_ = {i:[] for i in range(num_seeds)}
-    optimizers_ = {i:[] for i in range(num_seeds)}
-    for seed_no in range(num_seeds):
-        if opt['baseline']:
-            opt['num_feature'] = dataset.num_node_features
-            opt['num_class'] = dataset.num_classes
-            adj = get_sym_adj(dataset.data, opt, device)
-            model, data = CGNN(opt, adj, opt['time'], device).to(device), dataset.data.to(device)
-            train_this = train_cgnn
-        else:
-            model = GNN(opt, dataset, device)
-            train_this = train
-
-        if torch.cuda.device_count() > 1:
-            model = nn.DataParallel(model)
-
-        model = model.to(device)
-
-        for split_no in range(len(datas)):
-            # For each seed copy the model for different splits
-            new_model = copy.deepcopy(model)
-            parameters = [p for p in new_model.parameters() if p.requires_grad]
-            optimizer = get_optimizer(opt["optimizer"], parameters, lr=opt["lr"], weight_decay=opt["decay"])
-            print(optimizer)
-
-            new_model = new_model.to(device)
-
-            models_[seed_no].append(new_model)
-            optimizers_[seed_no].append(optimizer)
-
-
-    # Write header for log file
-    with open(f"experiments/{opt['log_file']}", "w") as f:
-        f.write("epoch,mean_fw_nfe,std_fw_nfe,mean_loss,std_loss,mean_train_acc,std_train_acc,mean_val_acc,std_val_acc,mean_test_acc,std_test_acc\n")
-
-    for epoch in range(1, opt["epoch"]):
-
-        print(f'[INFO] Epoch #[{epoch}/{opt["epoch"]}] : ')
-        agg_losses = []
-        agg_train_accs = []
-        agg_val_accs = []
-        agg_test_accs = []
-        agg_fw_nfe = []
-
-        for seed_no in range(num_seeds):
-            try:
-                # For each seed, record metrics for all splits
-                losses, train_accs, val_accs, tmp_test_accs, fw_nfe = [], [], [], [], []
-                
-                for split_no, data in enumerate(datas):
-                    loss = train_this(models_[seed_no][split_no], optimizers_[seed_no][split_no], data)
-                    losses.append(loss)
-
-                    train_acc, val_acc, tmp_test_acc = test(models_[seed_no][split_no], data)
-                    train_accs.append(train_acc)
-                    val_accs.append(val_acc)
-                    tmp_test_accs.append(tmp_test_acc)
-                    fw_nfe.append(models_[seed_no][split_no].fm.sum)
-
-
-                    print(f'    -> Seed #{seed_no + 1}, Split #{split_no+1}, loss = {loss:.4f}, val_acc = {val_acc:.4f}, test_acc = {tmp_test_acc:.4f}')
-
-            except KeyboardInterrupt:
-                print('[INFO] Interrupted ...')
-            except:
-                traceback.print_exc(file=sys.stdout)
-                continue
-
-            # Metrics for all splits are recorded, take the ones with best test accuracy
-            train_accs, val_accs, tmp_test_accs = np.array(train_accs), np.array(val_accs), np.array(tmp_test_accs)
-
-            best_acc_id = np.argmax(tmp_test_accs)
-            best_val_acc = val_accs[best_acc_id]
-            best_test_acc = tmp_test_accs[best_acc_id]
-            best_train_acc = train_accs[best_acc_id]
-            best_loss = min(losses) # [best_acc_id]
-            best_fw_nfe = min(fw_nfe)
-
-            agg_losses.append(best_loss)
-            agg_train_accs.append(best_train_acc)
-            agg_val_accs.append(best_val_acc)
-            agg_test_accs.append(best_test_acc)
-            agg_fw_nfe.append(best_fw_nfe)
-
-        # Mean over the best metrics of all seeds
-        loss_mean = np.array(agg_losses).mean()
-        train_accs_mean = np.array(agg_train_accs).mean()
-        val_accs_mean = np.array(agg_val_accs).mean()
-        test_accs_mean = np.array(agg_test_accs).mean()
-        fw_nfe_mean = np.array(agg_fw_nfe).mean()
-
-        loss_std = np.array(agg_losses).std()
-        train_accs_std = np.array(agg_train_accs).std()
-        val_accs_std = np.array(agg_val_accs).std()
-        test_accs_std = np.array(agg_test_accs).std()
-        fw_nfe_std = np.array(agg_fw_nfe).std()
-
-        print(f'\n    -> Mean loss : {loss_mean:.4f}, Mean FW NFE : {fw_nfe_mean}, Mean train acc : {train_accs_mean:.4f}, Mean val acc : {val_accs_mean:.4f}, Mean test acc : {test_accs_mean:.4f}')
-        print(f'    -> Std loss : {loss_std:.4f}, Std FW NFE : {fw_nfe_std}, Std train acc : {train_accs_std:.4f}, Std val acc : {val_accs_std:.4f}, Std test acc : {test_accs_std:.4f}')
-
-        wandb.log({
-            'loss_mean' : loss_mean,
-            'train_accs_mean' : train_accs_mean,
-            'val_accs_mean' : val_accs_mean,
-            'test_accs_mean' : test_accs_mean,
-            'fw_nfe_mean' : fw_nfe_mean,
-            'loss_std' : loss_std,
-            'train_accs_std' : train_accs_std,
-            'val_accs_std' : val_accs_std,
-            'test_accs_std' : test_accs_std,
-            'fw_nfe_std' : fw_nfe_std
-        })
-
-        # Log training details in a history file
-        with open(f"experiments/{opt['log_file']}", "a") as f:
-            print(f"[INFO] Logging into experiments/{opt['log_file']} ...\n")
-            f.write(f"{epoch},{fw_nfe_mean},{fw_nfe_std},{loss_mean},{loss_std},{train_accs_mean},{train_accs_std},{val_accs_mean},{val_accs_std},{test_accs_mean},{test_accs_std}\n")
-    
-    wandb.alert(title=f'Run {run_name} ended', text=f'Your run {run_name} for project {wandb_config["project"]} has ended')
-
-def main(cmd_opt):
-  best_opt = best_params_dict[cmd_opt['dataset']]
-  opt = {**cmd_opt, **best_opt}
-
-  print('[INFO] Testing multiple split methods, Experiment mode is : ', 'ON' if opt['experiment'] else 'OFF')
-  opt['function'] = cmd_opt['function']
-  opt['block'] = cmd_opt['block']
-  opt['run_name'] = cmd_opt['run_name']
-  opt['time'] = cmd_opt['time']
-  opt['alpha_'] = cmd_opt['alpha_']
-  opt['clip_bound'] = cmd_opt['clip_bound'] 
-  opt['num_splits'] = cmd_opt['num_splits']
-  opt['geom_gcn_splits'] = cmd_opt['geom_gcn_splits']
-  opt['planetoid_split'] = cmd_opt['planetoid_split']
-  opt['num_random_seeds'] = cmd_opt['num_random_seeds']
-  opt['epoch'] = cmd_opt['epoch']
-
-  print('[INFO] ODE function : ', opt['function'])
-  print('[INFO] Block type : ', opt['block'])
-  print('[INFO] T value : ', opt['time'])
-
-  if cmd_opt['beltrami']:
-    opt['beltrami'] = True
-
-  dataset = get_dataset(opt, '../data', opt['not_lcc'])
-  device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-  if opt['beltrami']:
-    pos_encoding = apply_beltrami(dataset.data, opt).to(device)
-    opt['pos_enc_dim'] = pos_encoding.shape[1]
-  else:
-    pos_encoding = None
-
-  if opt['rewire_KNN'] or opt['fa_layer']:
-    model = GNN_KNN(opt, dataset, device).to(device) if opt["no_early"] else GNNKNNEarly(opt, dataset, device).to(device)
-  else:
-    model = GNN(opt, dataset, device).to(device) if opt["no_early"] else GNNEarly(opt, dataset, device).to(device)
-
-  if not opt['planetoid_split'] and opt['dataset'] in ['Cora','Citeseer','Pubmed']:
-    dataset.data = set_train_val_test_split(np.random.randint(0, 1000), dataset.data, num_development=5000 if opt["dataset"] == "CoauthorCS" else 1500, num_per_class=opt['num_random_seeds'])
-
-  data = dataset.data.to(device)
-
-  parameters = [p for p in model.parameters() if p.requires_grad]
-  print_model_params(model)
-  optimizer = get_optimizer(opt['optimizer'], parameters, lr=opt['lr'], weight_decay=opt['decay'])
-  best_time = best_epoch = train_acc = val_acc = test_acc = 0
-
-  this_test = test_OGB if opt['dataset'] == 'ogbn-arxiv' else test
-
-  # Record best val_acc and test_acc
-  best_val_acc = 0.0
-  best_test_acc = 0.0
-  run_time_ls = []
-  fw_nfe_ls = []
-
-  try:
-    train_ray_rand(opt)
-  except:
-    traceback.print_exc(file=sys.stdout)
-
-
-
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
   parser.add_argument('--use_cora_defaults', action='store_true',
@@ -575,4 +374,25 @@ if __name__ == '__main__':
   args = parser.parse_args()
 
   opt = vars(args)
-  main(opt)
+  num_seeds = 20
+
+  log_file = opt['log_file']
+  run_name = log_file.split('.')[0]
+
+  wandb.init(entity='hieubkvn123', project='graph-neural-pde-phase-4', id=run_name)
+  wandb.alert(title=f'Run {run_name} started', text=f'Your run {run_name} for project {wandb_config["project"]} has started, conducting with planetoid splits for 20 random seeds')
+  log = { i + 1 : {} for i in range(num_seeds) }
+
+  for i in range(num_seeds):
+      fw_nfes, losses, train_accs, val_accs, test_accs = main(opt)
+      log[i+1]['fw_nfe'] = fw_nfes
+      log[i+1]['losses'] = losses
+      log[i+1]['train_accs'] = train_accs
+      log[i+1]['val_accs'] = val_accs
+      log[i+1]['test_accs'] = test_accs
+      print(f'[INFO] Loggin into {log_file} for seed #{i+1}...')
+
+  with open(f"experiments/{opt['log_file']}", "w") as f:
+      json.dump(log, f)
+
+  wandb.alert(title=f'Run {run_name} ended', text=f'Your run {run_name} for project {wandb_config["project"]} has ended')
