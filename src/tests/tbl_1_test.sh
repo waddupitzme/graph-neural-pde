@@ -1,6 +1,6 @@
 # For Linear GRAND
 # Dataset CORA - table. 1
-python3 test_multiple_planetoid_splits.py --dataset Cora --function laplacian --block attention --epoch 100 --num_splits 10 --time 128.0 --experiment --log_file 1_tbl_1_lr_grand_cora.json
+# python3 test_multiple_planetoid_splits.py --dataset Cora --function laplacian --block attention --epoch 100 --num_splits 10 --time 128.0 --experiment --log_file 1_tbl_1_lr_grand_cora.json
 
 # Dataset CITESEER - table. 1
 python3 test_multiple_planetoid_splits.py --dataset Citeseer --function laplacian --block attention --epoch 100 --num_splits 10 --time 128.0 --experiment --log_file 2_tbl_1_lr_grand_citeseer.json
