@@ -86,12 +86,12 @@ class ExtendedLaplacianODEFunc(ODEFunc):
     ax = self.sparse_multiply(x)
 
     # Shape = (2045, ) (norm along dim 1)
-    x_norm = torch.linalg.norm(x, 2, dim=1)
+    # x_norm = torch.linalg.norm(x, 2, dim=1)
 
     # Shape = (2045, 1)
-    x_norm = x_norm.view(-1, 1)
+    # x_norm = x_norm.view(-1, 1)
 
-    f = (ax - x) * (x_norm ** self.alpha_) * 1e-6
+    f = (ax - 0.995*x) 
 
     # Check if norm of f explodes 
     # norm_f = torch.linalg.norm(f, 1, dim=1)
@@ -219,10 +219,11 @@ class ExtendedLaplacianODEFunc3(ODEFunc):
 
     # Shape = (2045, ) (norm along dim 1)
     x_norm = torch.linalg.norm(x, 2, dim=1)
+    print('x norm is: \n ', x_norm)    
 
     # Truncate x_norm the have max=1
     x_norm = torch.clamp(x_norm, min=None, max=self.clipping_bound)
-
+    # print('x norm clipped is: \n', x_norm)
     # Shape = (2045, 1)
     x_norm = x_norm.view(-1, 1)
 

@@ -1,0 +1,43 @@
+2022-03-27 08:54:31,192 INFO    MainThread:804 [internal.py:wandb_internal():91] W&B internal server running at pid: 804, started at: 2022-03-27 08:54:31.191876
+2022-03-27 08:54:31,195 INFO    WriterThread:804 [datastore.py:open_for_write():77] open: /workspace/graph-neural-pde/src/wandb/run-20220327_085430-v+epsilon epsilon = 0.1 alpha_ = 0.9 alpha = 10 dopri5 test2/run-v+epsilon epsilon = 0.1 alpha_ = 0.9 alpha = 10 dopri5 test2.wandb
+2022-03-27 08:54:31,198 DEBUG   SenderThread:804 [sender.py:send():160] send: header
+2022-03-27 08:54:31,198 DEBUG   HandlerThread:804 [handler.py:handle_request():120] handle_request: check_version
+2022-03-27 08:54:31,199 DEBUG   SenderThread:804 [sender.py:send():160] send: request
+2022-03-27 08:54:31,199 DEBUG   SenderThread:804 [sender.py:send_request():169] send_request: check_version
+2022-03-27 08:54:31,474 DEBUG   SenderThread:804 [sender.py:send():160] send: run
+2022-03-27 08:54:31,881 DEBUG   HandlerThread:804 [handler.py:handle_request():120] handle_request: run_start
+2022-03-27 08:54:31,887 INFO    SenderThread:804 [sender.py:_start_run_threads():654] run started: v+epsilon epsilon = 0.1 alpha_ = 0.9 alpha = 10 dopri5 test2 with start time 1648371270
+2022-03-27 08:54:31,888 DEBUG   SenderThread:804 [sender.py:send():160] send: summary
+2022-03-27 08:54:31,889 INFO    SenderThread:804 [sender.py:_save_file():781] saving file wandb-summary.json with policy end
+2022-03-27 08:54:33,874 DEBUG   HandlerThread:804 [meta.py:__init__():39] meta init
+2022-03-27 08:54:33,875 DEBUG   HandlerThread:804 [meta.py:__init__():53] meta init done
+2022-03-27 08:54:33,887 DEBUG   HandlerThread:804 [meta.py:probe():210] probe
+2022-03-27 08:54:33,889 DEBUG   HandlerThread:804 [meta.py:_setup_git():200] setup git
+2022-03-27 08:54:33,913 DEBUG   HandlerThread:804 [meta.py:_setup_git():207] setup git done
+2022-03-27 08:54:33,913 DEBUG   HandlerThread:804 [meta.py:_save_pip():57] save pip
+2022-03-27 08:54:33,914 DEBUG   HandlerThread:804 [meta.py:_save_pip():71] save pip done
+2022-03-27 08:54:33,914 DEBUG   HandlerThread:804 [meta.py:_save_conda():78] save conda
+2022-03-27 08:54:35,359 DEBUG   HandlerThread:804 [meta.py:_save_conda():86] save conda done
+2022-03-27 08:54:35,359 DEBUG   HandlerThread:804 [meta.py:probe():252] probe done
+2022-03-27 08:54:35,370 DEBUG   SenderThread:804 [sender.py:send():160] send: files
+2022-03-27 08:54:35,371 INFO    SenderThread:804 [sender.py:_save_file():781] saving file wandb-metadata.json with policy now
+2022-03-27 08:54:35,379 DEBUG   HandlerThread:804 [handler.py:handle_request():120] handle_request: status
+2022-03-27 08:54:35,379 DEBUG   SenderThread:804 [sender.py:send():160] send: request
+2022-03-27 08:54:35,379 DEBUG   SenderThread:804 [sender.py:send_request():169] send_request: status
+2022-03-27 08:54:50,710 DEBUG   HandlerThread:804 [handler.py:handle_request():120] handle_request: status
+2022-03-27 08:54:50,711 DEBUG   SenderThread:804 [sender.py:send():160] send: request
+2022-03-27 08:54:50,711 DEBUG   SenderThread:804 [sender.py:send_request():169] send_request: status
+2022-03-27 08:55:02,056 DEBUG   SenderThread:804 [sender.py:send():160] send: stats
+2022-03-27 08:55:06,052 DEBUG   HandlerThread:804 [handler.py:handle_request():120] handle_request: status
+2022-03-27 08:55:06,052 DEBUG   SenderThread:804 [sender.py:send():160] send: request
+2022-03-27 08:55:06,052 DEBUG   SenderThread:804 [sender.py:send_request():169] send_request: status
+2022-03-27 08:55:21,378 DEBUG   HandlerThread:804 [handler.py:handle_request():120] handle_request: status
+2022-03-27 08:55:21,378 DEBUG   SenderThread:804 [sender.py:send():160] send: request
+2022-03-27 08:55:21,378 DEBUG   SenderThread:804 [sender.py:send_request():169] send_request: status
+2022-03-27 08:55:21,623 WARNING MainThread:804 [internal.py:wandb_internal():146] Internal process interrupt: 1
+2022-03-27 08:55:23,265 WARNING MainThread:804 [internal.py:wandb_internal():146] Internal process interrupt: 2
+2022-03-27 08:55:23,265 ERROR   MainThread:804 [internal.py:wandb_internal():149] Internal process interrupted.
+2022-03-27 08:55:23,616 INFO    SenderThread:804 [sender.py:finish():884] shutting down sender
+2022-03-27 08:55:23,617 INFO    HandlerThread:804 [handler.py:finish():624] shutting down handler
+2022-03-27 08:55:23,620 INFO    WriterThread:804 [datastore.py:close():258] close: /workspace/graph-neural-pde/src/wandb/run-20220327_085430-v+epsilon epsilon = 0.1 alpha_ = 0.9 alpha = 10 dopri5 test2/run-v+epsilon epsilon = 0.1 alpha_ = 0.9 alpha = 10 dopri5 test2.wandb
+2022-03-27 08:55:25,673 INFO    MainThread:804 [internal.py:handle_exit():78] Internal process exited

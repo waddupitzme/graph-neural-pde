@@ -1,4 +1,4 @@
 wandb_config = {
-    'project' : 'graph_neural_pde_project_2',
+    'project' : 'accu_grad_test',
     'entity' : 'khangnguyen2001'
 }

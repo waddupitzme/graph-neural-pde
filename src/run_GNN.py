@@ -247,7 +247,6 @@ def main(cmd_opt):
   try:
       for epoch in range(1, opt['epoch']):
         start_time = time.time()
-
         if opt['rewire_KNN'] and epoch % opt['rewire_KNN_epoch'] == 0 and epoch != 0:
           ei = apply_KNN(data, pos_encoding, model, opt)
           model.odeblock.odefunc.edge_index = ei

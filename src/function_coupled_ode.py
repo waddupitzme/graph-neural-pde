@@ -16,9 +16,7 @@ class CoupledODEFunc(ODEFunc):
 
   # currently requires in_features = out_features
   def __init__(self, in_features, out_features, opt, data, device, alpha_=0.9):
-    ## 1. Try with alpha = [0.5, 0.9] ##
-    ## 2. Log the value of ||v|| to see if it explodes ##
-    ## 3. Clip ||v|| ##
+    # Try with different alpha (0.9, 0.95, 0.99)
     super(CoupledODEFunc, self).__init__(opt, data, device)
 
     self.in_features = in_features
@@ -53,9 +51,19 @@ class CoupledODEFunc(ODEFunc):
       alpha = torch.sigmoid(self.alpha_train)
     else:
       alpha = self.alpha_train
-
+    # alpha = 0.9
     nabla_f = alpha * (ax - x)
-    print('printing v',v)
+    # v + epsilon 
+    # epsilon = 0.1
+    # v = v + epsilon
+    # |v|
+    # relu(v)
+    # different initial value of v (0.1, ...)
+    # explore the dynamic of v
+    
+    # debugging:
+    print('printing mean norm v', torch.mean(torch.norm(v,dim = 1)))
+    print('printing mean norm nabla f', torch.mean(torch.norm(nabla_f, dim = 1)))
     # v = torch.clamp(v, min = -0.5, max = 0.5)
     # v = v/torch.max(v)
     v_p = self.alpha_ * (nabla_f**2 - v)

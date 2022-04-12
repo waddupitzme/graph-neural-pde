@@ -1,0 +1,30 @@
+{
+    "os": "Linux-5.10.16.3-microsoft-standard-WSL2-x86_64-with-debian-buster-sid",
+    "python": "3.6.10",
+    "heartbeatAt": "2022-03-27T08:54:33.887438",
+    "startedAt": "2022-03-27T08:54:30.224374",
+    "docker": null,
+    "cpu_count": 4,
+    "cuda": null,
+    "args": [
+        "--block",
+        "coupled",
+        "--function",
+        "coupled",
+        "--experiment",
+        "--run_name",
+        "v+epsilon epsilon = 0.1 alpha_ = 0.9 alpha = 10 dopri5 test2"
+    ],
+    "state": "running",
+    "program": "run_GNN.py",
+    "codePath": "src/run_GNN.py",
+    "git": {
+        "remote": "https://github.com/waddupitzme/graph-neural-pde.git",
+        "commit": "4e0a3dbdfaa892b5b178c81766dc0260c3a581e8"
+    },
+    "email": "khang.nguyenhoang.vn@gmail.com\\n",
+    "root": "/workspace/graph-neural-pde",
+    "host": "501863d3d874",
+    "username": "root",
+    "executable": "/opt/conda/bin/python3"
+}
