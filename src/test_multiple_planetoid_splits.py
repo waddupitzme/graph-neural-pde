@@ -366,6 +366,7 @@ if __name__ == '__main__':
   parser.add_argument("--run_name", required=False, default=None, help="Run ID for wandb project")
   parser.add_argument("--run_notes", required=False, default=None, help="Additional description of the run")
   parser.add_argument("--log_file", required=True, help="Name of the csv log file")
+  parser.add_argument("--only_cpu", action='store_true', required=False, help="Use only CPU")
 
   # For extended laplacian functions with clipping bounds.
   parser.add_argument("--alpha_", type=float, required=False, default=1.0, help='Alpha value')

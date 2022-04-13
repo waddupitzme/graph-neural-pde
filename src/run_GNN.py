@@ -212,6 +212,7 @@ def main(cmd_opt):
 
   dataset = get_dataset(opt, '../data', opt['not_lcc'])
   device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+  if(opt['only_cpu']): device = torch.device('cpu')
 
   if opt['beltrami']:
     pos_encoding = apply_beltrami(dataset.data, opt).to(device)
@@ -464,6 +465,7 @@ if __name__ == '__main__':
   # For extended laplacian functions with clipping bounds.
   parser.add_argument("--alpha_", type=float, required=False, default=1.0, help='Alpha value')
   parser.add_argument("--clip_bound", type=float, required=False, default=0.05, help='Norm clipping bound')
+  parser.add_argument("--only_cpu", action='store_true', required=False, help="Use only CPU")
 
   args = parser.parse_args()
 
