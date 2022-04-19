@@ -43,11 +43,17 @@ class AttODEblock(ODEblock):
 
     func = self.reg_odefunc if self.training and self.nreg > 0 else self.odefunc
     state = (x,) + reg_states if self.training and self.nreg > 0 else x
+    # print norm 
+    # x_norm = torch.linalg.norm(x, 2, dim = 1)
+    # x_norm = x_norm.view(-1,1)
+    # norm_mean = x_norm.min()
+    # print('characteristics of norm of x is: ', x_norm.min().item(), x_norm.mean().item(), x_norm.max().item(), sep="\t")
 
     if self.opt["adjoint"] and self.training:
       state_dt = integrator(
         func, state, t,
-        method=self.opt['method'],
+        #method=self.opt['method'],
+        method='rk4',
         options={'step_size': self.opt['step_size']},
         adjoint_method=self.opt['adjoint_method'],
         adjoint_options={'step_size': self.opt['adjoint_step_size']},

@@ -195,8 +195,11 @@ class ExtendedLaplacianODEFunc3(ODEFunc):
     self.beta_sc = nn.Parameter(torch.ones(1))
 
   def sparse_multiply(self, x):
+    #x = torch.eye(x.shape[0])
+    # print('attention weight', self.attention_weights, self.attention_weights.shape)
     if self.opt['block'] in ['attention']:  # adj is a multihead attention
       mean_attention = self.attention_weights.mean(dim=1)
+      # print('mean attention ', mean_attention, mean_attention.shape)
       ax = torch_sparse.spmm(self.edge_index, mean_attention, x.shape[0], x.shape[0], x)
     elif self.opt['block'] in ['mixed', 'hard_attention']:  # adj is a torch sparse matrix
       ax = torch_sparse.spmm(self.edge_index, self.attention_weights, x.shape[0], x.shape[0], x)
@@ -216,19 +219,26 @@ class ExtendedLaplacianODEFunc3(ODEFunc):
 
     # Shape = 2045 x 80 (2045 = Number of nodes; 80 = Feature shape)
     ax = self.sparse_multiply(x)
-
+    # print(f"Eigenvalue of A(s): {torch.linalg.eigh(ax - torch.eye(ax.shape[0]))}")
     # Shape = (2045, ) (norm along dim 1)
-    x_norm = torch.linalg.norm(x, 2, dim=1)
-    print('x norm is: \n ', x_norm)    
+    #### x_norm = torch.linalg.norm(x, 2, dim=1)
+    # print('x norm is: \n ', x_norm)    
 
     # Truncate x_norm the have max=1
-    x_norm = torch.clamp(x_norm, min=None, max=self.clipping_bound)
+    # x_norm = torch.clamp(x_norm, min=None, max=self.clipping_bound)
     # print('x norm clipped is: \n', x_norm)
     # Shape = (2045, 1)
-    x_norm = x_norm.view(-1, 1)
-
-    f = (ax - x) * (x_norm ** self.alpha_) 
-
+    #### x_norm = x_norm.view(-1, 1)
+    # caigido = ax - x
+    #### f = (ax-x) * (x_norm ** self.alpha_)
+    # print(f"Eigenvalue of A - I: {eigen}")
+    #print(f"Min, mean, max: {st.min().item()}, {st.mean().item()}, {st.max().item()}") 
+    f = (ax-x) * 0.2
+    # f = (ax-x) * (0.4 ** self.alpha_)
+    # f_norm = torch.linalg.norm(f, 2, dim = 1)
+    
+    # print('characteristics of norm of f is: ', f_norm.min().item(), f_norm.mean().item(), f_norm.max().item(), sep="\t") 
+    # print('characteristics of norm of x is: ', x_norm.min().item(), x_norm.mean().item(), x_norm.max().item(), sep="\t")
     if self.opt['add_source']:
       f = f + self.beta_train * self.x0
 

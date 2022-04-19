@@ -1,0 +1,38 @@
+2022-04-13 02:32:12,069 INFO    MainThread:1765 [internal.py:wandb_internal():91] W&B internal server running at pid: 1765, started at: 2022-04-13 02:32:12.069500
+2022-04-13 02:32:12,079 DEBUG   HandlerThread:1765 [handler.py:handle_request():120] handle_request: check_version
+2022-04-13 02:32:12,080 INFO    WriterThread:1765 [datastore.py:open_for_write():77] open: /workspace/graph-neural-pde/src/wandb/run-20220413_023210-2n9k3pq3/run-2n9k3pq3.wandb
+2022-04-13 02:32:12,082 DEBUG   SenderThread:1765 [sender.py:send():160] send: header
+2022-04-13 02:32:12,083 DEBUG   SenderThread:1765 [sender.py:send():160] send: request
+2022-04-13 02:32:12,083 DEBUG   SenderThread:1765 [sender.py:send_request():169] send_request: check_version
+2022-04-13 02:32:12,327 DEBUG   SenderThread:1765 [sender.py:send():160] send: run
+2022-04-13 02:32:12,812 INFO    SenderThread:1765 [sender.py:_start_run_threads():654] run started: 2n9k3pq3 with start time 1649817130
+2022-04-13 02:32:12,813 DEBUG   SenderThread:1765 [sender.py:send():160] send: summary
+2022-04-13 02:32:12,814 DEBUG   HandlerThread:1765 [handler.py:handle_request():120] handle_request: run_start
+2022-04-13 02:32:12,821 INFO    SenderThread:1765 [sender.py:_save_file():781] saving file wandb-summary.json with policy end
+2022-04-13 02:32:17,274 DEBUG   HandlerThread:1765 [meta.py:__init__():39] meta init
+2022-04-13 02:32:17,275 DEBUG   HandlerThread:1765 [meta.py:__init__():53] meta init done
+2022-04-13 02:32:17,275 DEBUG   HandlerThread:1765 [meta.py:probe():210] probe
+2022-04-13 02:32:17,281 DEBUG   HandlerThread:1765 [meta.py:_setup_git():200] setup git
+2022-04-13 02:32:17,333 DEBUG   HandlerThread:1765 [meta.py:_setup_git():207] setup git done
+2022-04-13 02:32:17,334 DEBUG   HandlerThread:1765 [meta.py:_save_pip():57] save pip
+2022-04-13 02:32:17,336 DEBUG   HandlerThread:1765 [meta.py:_save_pip():71] save pip done
+2022-04-13 02:32:17,336 DEBUG   HandlerThread:1765 [meta.py:_save_conda():78] save conda
+2022-04-13 02:32:19,279 DEBUG   HandlerThread:1765 [meta.py:_save_conda():86] save conda done
+2022-04-13 02:32:19,279 DEBUG   HandlerThread:1765 [meta.py:probe():252] probe done
+2022-04-13 02:32:19,294 DEBUG   HandlerThread:1765 [handler.py:handle_request():120] handle_request: status
+2022-04-13 02:32:19,295 DEBUG   SenderThread:1765 [sender.py:send():160] send: request
+2022-04-13 02:32:19,295 DEBUG   SenderThread:1765 [sender.py:send_request():169] send_request: status
+2022-04-13 02:32:19,629 DEBUG   SenderThread:1765 [sender.py:send():160] send: files
+2022-04-13 02:32:19,629 INFO    SenderThread:1765 [sender.py:_save_file():781] saving file wandb-metadata.json with policy now
+2022-04-13 02:32:24,340 DEBUG   SenderThread:1765 [sender.py:send():160] send: history
+2022-04-13 02:32:24,340 DEBUG   SenderThread:1765 [sender.py:send():160] send: summary
+2022-04-13 02:32:24,341 INFO    SenderThread:1765 [sender.py:_save_file():781] saving file wandb-summary.json with policy end
+2022-04-13 02:32:28,937 DEBUG   SenderThread:1765 [sender.py:send():160] send: history
+2022-04-13 02:32:28,938 DEBUG   SenderThread:1765 [sender.py:send():160] send: summary
+2022-04-13 02:32:28,939 INFO    SenderThread:1765 [sender.py:_save_file():781] saving file wandb-summary.json with policy end
+2022-04-13 02:32:31,733 WARNING MainThread:1765 [internal.py:wandb_internal():146] Internal process interrupt: 1
+2022-04-13 02:32:31,899 WARNING MainThread:1765 [internal.py:wandb_internal():146] Internal process interrupt: 2
+2022-04-13 02:32:31,900 ERROR   MainThread:1765 [internal.py:wandb_internal():149] Internal process interrupted.
+2022-04-13 02:32:32,882 INFO    WriterThread:1765 [datastore.py:close():258] close: /workspace/graph-neural-pde/src/wandb/run-20220413_023210-2n9k3pq3/run-2n9k3pq3.wandb
+2022-04-13 02:32:32,883 INFO    SenderThread:1765 [sender.py:finish():884] shutting down sender
+2022-04-13 02:32:35,682 INFO    MainThread:1765 [internal.py:handle_exit():78] Internal process exited

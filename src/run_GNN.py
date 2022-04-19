@@ -68,7 +68,7 @@ def train(model, optimizer, data, pos_encoding=None):
     train_pred_idx = data.train_mask
 
   out = model(feat, pos_encoding)
-  print(out)
+  # print(out)
 
   if model.opt['dataset'] == 'ogbn-arxiv':
     lf = torch.nn.functional.nll_loss
