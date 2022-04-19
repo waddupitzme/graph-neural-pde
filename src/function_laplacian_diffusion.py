@@ -221,19 +221,18 @@ class ExtendedLaplacianODEFunc3(ODEFunc):
     ax = self.sparse_multiply(x)
     # print(f"Eigenvalue of A(s): {torch.linalg.eigh(ax - torch.eye(ax.shape[0]))}")
     # Shape = (2045, ) (norm along dim 1)
-    #### x_norm = torch.linalg.norm(x, 2, dim=1)
+    x_norm = torch.linalg.norm(x, 2, dim=0)
     # print('x norm is: \n ', x_norm)    
 
     # Truncate x_norm the have max=1
-    # x_norm = torch.clamp(x_norm, min=None, max=self.clipping_bound)
+    x_norm = torch.clamp(x_norm, min=None, max=self.clipping_bound)
     # print('x norm clipped is: \n', x_norm)
     # Shape = (2045, 1)
     #### x_norm = x_norm.view(-1, 1)
     # caigido = ax - x
-    #### f = (ax-x) * (x_norm ** self.alpha_)
+    f = (ax-x) * (x_norm ** self.alpha_)
     # print(f"Eigenvalue of A - I: {eigen}")
     #print(f"Min, mean, max: {st.min().item()}, {st.mean().item()}, {st.max().item()}") 
-    f = (ax-x) * 0.2
     # f = (ax-x) * (0.4 ** self.alpha_)
     # f_norm = torch.linalg.norm(f, 2, dim = 1)
     
