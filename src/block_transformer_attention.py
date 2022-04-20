@@ -35,6 +35,10 @@ class AttODEblock(ODEblock):
 
   def forward(self, x):
     t = self.t.type_as(x)
+    # Normalized norm of x to 1
+    x_norm = torch.linalg.norm(x, 2, dim = 0)
+    x = x/x_norm
+    #
     self.odefunc.attention_weights = self.get_attention_weights(x)
     self.reg_odefunc.odefunc.attention_weights = self.odefunc.attention_weights
     integrator = self.train_integrator if self.training else self.test_integrator

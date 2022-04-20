@@ -1,4 +1,4 @@
 wandb_config = {
-    'project' : 'accu_grad_test',
+    'project' : 'deepGRAND normalized',
     'entity' : 'khangnguyen2001'
 }
