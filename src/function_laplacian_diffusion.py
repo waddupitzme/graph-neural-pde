@@ -221,20 +221,19 @@ class ExtendedLaplacianODEFunc3(ODEFunc):
     ax = self.sparse_multiply(x)
     # print(f"Eigenvalue of A(s): {torch.linalg.eigh(ax - torch.eye(ax.shape[0]))}")
     # Shape = (2045, ) (norm along dim 1)
-    x_norm = torch.linalg.norm(x, 2, dim=0)
+    x_norm = torch.linalg.norm(x, 2, dim=1)
     # print('x norm is: \n ', x_norm)    
 
+    print('characteristics of norm of x is: ', x_norm.min().item(), x_norm.mean().item(), x_norm.max().item(), sep="\t")
     # Truncate x_norm the have max=1
     x_norm = torch.clamp(x_norm, min=None, max=self.clipping_bound)
     # print('x norm clipped is: \n', x_norm)
     # Shape = (2045, 1)
-    #### x_norm = x_norm.view(-1, 1)
-    # caigido = ax - x
+    x_norm = x_norm.view(-1, 1)
     f = (ax-x) * (x_norm ** self.alpha_)
-    # print(f"Eigenvalue of A - I: {eigen}")
     #print(f"Min, mean, max: {st.min().item()}, {st.mean().item()}, {st.max().item()}") 
     # f = (ax-x) * (0.4 ** self.alpha_)
-    # f_norm = torch.linalg.norm(f, 2, dim = 1)
+    # f_norm = torch.linalg.norm(f, 2, dim = 0)
     
     # print('characteristics of norm of f is: ', f_norm.min().item(), f_norm.mean().item(), f_norm.max().item(), sep="\t") 
     # print('characteristics of norm of x is: ', x_norm.min().item(), x_norm.mean().item(), x_norm.max().item(), sep="\t")

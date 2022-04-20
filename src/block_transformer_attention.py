@@ -36,9 +36,16 @@ class AttODEblock(ODEblock):
   def forward(self, x):
     t = self.t.type_as(x)
     # Normalized norm of x to 1
-    x_norm = torch.linalg.norm(x, 2, dim = 0)
-    x = x/x_norm
-    #
+    # x_norm = torch.linalg.norm(x, 2, dim = 0)
+    # x_norm = 2*x_norm
+    # x = x/x_norm
+    # Min/max normalizing to 1
+    # x_nmax = 0.5
+    # x_nmin = 0
+    # x_omax = x.max().item()
+    # x_omin = x.min().item()
+    # x = (x - x_omin)/(x_omax-x_omin) * (x_nmax-x_nmin) + x_nmin
+    
     self.odefunc.attention_weights = self.get_attention_weights(x)
     self.reg_odefunc.odefunc.attention_weights = self.odefunc.attention_weights
     integrator = self.train_integrator if self.training else self.test_integrator
@@ -48,7 +55,7 @@ class AttODEblock(ODEblock):
     func = self.reg_odefunc if self.training and self.nreg > 0 else self.odefunc
     state = (x,) + reg_states if self.training and self.nreg > 0 else x
     # print norm 
-    # x_norm = torch.linalg.norm(x, 2, dim = 1)
+    #x_norm = torch.linalg.norm(x, 2, dim = 0)
     # x_norm = x_norm.view(-1,1)
     # norm_mean = x_norm.min()
     # print('characteristics of norm of x is: ', x_norm.min().item(), x_norm.mean().item(), x_norm.max().item(), sep="\t")
