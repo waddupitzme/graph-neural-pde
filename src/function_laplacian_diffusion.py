@@ -194,6 +194,10 @@ class ExtendedLaplacianODEFunc3(ODEFunc):
     self.alpha_sc = nn.Parameter(torch.ones(1))
     self.beta_sc = nn.Parameter(torch.ones(1))
 
+    # For attention matrices
+    self.A = None
+    self.P_inv = None
+
   def sparse_multiply(self, x):
     if self.opt['block'] in ['attention']:  # adj is a multihead attention
       mean_attention = self.attention_weights.mean(dim=1)
@@ -224,21 +228,37 @@ class ExtendedLaplacianODEFunc3(ODEFunc):
 
     # Shape = 2045 x 80 (2045 = Number of nodes; 80 = Feature shape)
     ax = self.sparse_multiply(x)
-    A = self.construct_dense_att_matrix(self.edge_index, self.edge_weight, x.shape[0]).to(x)
 
-    # print(A.sum(dim=0), A.sum(dim=1))
-    # print(torch.matmul(A, x) - ax)
+    if(self.A is None):
+        I = torch.eye(x.shape[0]).to(x)
+        self.A = self.construct_dense_att_matrix(self.edge_index, self.edge_weight, x.shape[0]).to(x)
+        self.A = torch.transpose(self.A, 0, 1)
 
+        print(self.A.sum(dim=1), self.A[0].sum())
+        self.A = self.A - I
+    
+    # -------------------------------------------------------------------- #
     # Shape = (2045, ) (norm along dim 1)
-    x_norm = torch.linalg.norm(x, 2, dim=1)
+    # x_norm = torch.linalg.norm(x, 2, dim=1)
 
     # Truncate x_norm the have max=1
-    x_norm = torch.clamp(x_norm, min=None, max=self.clipping_bound)
+    # x_norm = torch.clamp(x_norm, min=None, max=self.clipping_bound)
 
     # Shape = (2045, 1)
-    x_norm = x_norm.view(-1, 1)
+    # x_norm = x_norm.view(-1, 1)
 
-    f = (ax - x) * (x_norm ** self.alpha_) 
+    # f = (ax - x) * (x_norm ** self.alpha_) 
+    # -------------------------------------------------------------------- #
+
+    #Eigen-decompose A
+    if(self.P_inv is None):
+        L, P = torch.linalg.eig(self.A) 
+        self.P_inv = torch.linalg.inv(P).type(torch.FloatTensor).to(x)
+
+    ax = torch.matmul(self.A, x)
+    z = torch.matmul(self.P_inv, x)
+    z = z / torch.norm(z, 2, dim=1).view(-1, 1)
+    f = ax * (z ** self.alpha_)
 
     if self.opt['add_source']:
       f = f + self.beta_train * self.x0
