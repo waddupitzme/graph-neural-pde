@@ -16,12 +16,13 @@ bounds = np.arange(args['clip_low'], args['clip_high'], args['clip_step'])
 cmd = """
     python3 run_GNN.py --function {}
                        --block attention 
+                       --dataset Photo
+                       --epoch 200
                        --experiment 
                        --lr 0.0000001 
                        --max_iters 1000 
-                       --time 128.0 
+                       --time 64.0 
                        --max_nfe 100000000 
-                       --run_name 'Clipping alpha={} - bound={}'
                        --alpha_ {} 
                        --clip_bound {}
 """
@@ -31,6 +32,6 @@ for alpha in alphas:
         cmd_ = cmd.format(args['function'], alpha, bound, alpha, bound).replace("\n", "").replace("\t", "")
         
         print(cmd_)
-        # os.system(cmd_)
+        os.system(cmd_)
 
     
