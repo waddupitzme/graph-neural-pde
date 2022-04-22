@@ -204,6 +204,14 @@ class ExtendedLaplacianODEFunc3(ODEFunc):
       ax = torch_sparse.spmm(self.edge_index, self.edge_weight, x.shape[0], x.shape[0], x)
     return ax
 
+  def construct_dense_att_matrix(self, edge_index, edge_weight, num_node):
+    att_matrix = torch.zeros((num_node, num_node))
+
+    for i, (src, dst) in enumerate(zip(edge_index[0,:], edge_index[1,:])):
+        att_matrix[src, dst] = edge_weight[i]
+
+    return att_matrix
+
   def forward(self, t, x):  # the t param is needed by the ODE solver.
     if self.nfe > self.opt["max_nfe"]:
       raise MaxNFEException
@@ -216,6 +224,10 @@ class ExtendedLaplacianODEFunc3(ODEFunc):
 
     # Shape = 2045 x 80 (2045 = Number of nodes; 80 = Feature shape)
     ax = self.sparse_multiply(x)
+    A = self.construct_dense_att_matrix(self.edge_index, self.edge_weight, x.shape[0]).to(x)
+
+    # print(A.sum(dim=0), A.sum(dim=1))
+    # print(torch.matmul(A, x) - ax)
 
     # Shape = (2045, ) (norm along dim 1)
     x_norm = torch.linalg.norm(x, 2, dim=1)
