@@ -230,35 +230,29 @@ class ExtendedLaplacianODEFunc3(ODEFunc):
     ax = self.sparse_multiply(x)
 
     if(self.A is None):
+        mean_attention = self.attention_weights.mean(dim=1)
         I = torch.eye(x.shape[0]).to(x)
         self.A = self.construct_dense_att_matrix(self.edge_index, self.edge_weight, x.shape[0]).to(x)
         self.A = torch.transpose(self.A, 0, 1)
 
-        print(self.A.sum(dim=1), self.A[0].sum())
         self.A = self.A - I
     
-    # -------------------------------------------------------------------- #
-    # Shape = (2045, ) (norm along dim 1)
-    # x_norm = torch.linalg.norm(x, 2, dim=1)
-
-    # Truncate x_norm the have max=1
-    # x_norm = torch.clamp(x_norm, min=None, max=self.clipping_bound)
-
-    # Shape = (2045, 1)
-    # x_norm = x_norm.view(-1, 1)
-
-    # f = (ax - x) * (x_norm ** self.alpha_) 
-    # -------------------------------------------------------------------- #
-
-    #Eigen-decompose A
+    # Eigen-decompose A
     if(self.P_inv is None):
         L, P = torch.linalg.eig(self.A) 
-        self.P_inv = torch.linalg.inv(P).type(torch.FloatTensor).to(x)
+        self.P_inv = torch.linalg.inv(P).to(x.device) 
 
     ax = torch.matmul(self.A, x)
-    z = torch.matmul(self.P_inv, x)
-    z = z / torch.norm(z, 2, dim=1).view(-1, 1)
-    f = ax * (z ** self.alpha_)
+    x_complex = torch.complex(x, torch.zeros_like(x))
+    z = torch.matmul(self.P_inv, x_complex)
+
+    z_real, z_imag = z.real, z.imag
+    elemwise_norm = torch.sqrt(z_real ** 2 + z_imag ** 2)
+    elemwise_norm = torch.nan_to_num(elemwise_norm)
+    elemwise_norm = torch.clamp(elemwise_norm, max = 0.5)
+    # elemwise_norm = elemwise_norm / torch.norm(elemwise_norm, 2, dim=1).view(-1,1)
+    f = ax * (elemwise_norm ** self.alpha_)
+    f = torch.nan_to_num(f)
 
     if self.opt['add_source']:
       f = f + self.beta_train * self.x0
