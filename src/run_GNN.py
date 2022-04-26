@@ -1,4 +1,5 @@
-import wandb
+import sys
+import traceback
 import argparse
 import numpy as np
 import torch
@@ -13,7 +14,6 @@ from data import get_dataset, set_train_val_test_split
 from ogb.nodeproppred import Evaluator
 from graph_rewiring import apply_KNN, apply_beltrami, apply_edge_sampling
 from best_params import  best_params_dict
-from wandb_conf import wandb_config
 
 
 def get_optimizer(name, parameters, lr, weight_decay=0):
@@ -190,23 +190,30 @@ def main(cmd_opt):
   if(cmd_opt['experiment']):
     opt['function'] = cmd_opt['function']
     opt['block'] = cmd_opt['block']
-    opt['run_name'] = cmd_opt['run_name']
     opt['time'] = cmd_opt['time']
     opt['alpha_'] = cmd_opt['alpha_']
     opt['clip_bound'] = cmd_opt['clip_bound']
+    opt['num_splits'] = cmd_opt['num_splits']
+    opt['geom_gcn_splits'] = cmd_opt['geom_gcn_splits']
+    opt['planetoid_split'] = cmd_opt['planetoid_split']
+    opt['num_random_seeds'] = cmd_opt['num_random_seeds']
+    opt['l1_reg'] = cmd_opt['l1_reg']
+    opt['l1_weight_decay'] = cmd_opt['l1_weight_decay']
+    opt['epoch'] = cmd_opt['epoch']
+    opt['max_nfe'] = cmd_opt['max_nfe']
 
   print('[INFO] ODE function : ', opt['function'])
   print('[INFO] Block type : ', opt['block'])
   print('[INFO] T value : ', opt['time'])
-
-  # Initialize wandb
-  wandb.init(project=wandb_config['project'], entity=wandb_config['entity'], id=opt['run_name'], notes=opt['run_notes'])
+  print('[INFO] L1 regularization on : ', opt['l1_reg'])
+  print('[INFO] L1 reg coefficient : ', opt['l1_weight_decay'])
 
   if cmd_opt['beltrami']:
     opt['beltrami'] = True
 
   dataset = get_dataset(opt, '../data', opt['not_lcc'])
   device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+  if(opt['only_cpu']): device = torch.device('cpu')
 
   if opt['beltrami']:
     pos_encoding = apply_beltrami(dataset.data, opt).to(device)
@@ -220,7 +227,7 @@ def main(cmd_opt):
     model = GNN(opt, dataset, device).to(device) if opt["no_early"] else GNNEarly(opt, dataset, device).to(device)
 
   if not opt['planetoid_split'] and opt['dataset'] in ['Cora','Citeseer','Pubmed']:
-    dataset.data = set_train_val_test_split(np.random.randint(0, 1000), dataset.data, num_development=5000 if opt["dataset"] == "CoauthorCS" else 1500)
+    dataset.data = set_train_val_test_split(np.random.randint(0, 1000), dataset.data, num_development=5000 if opt["dataset"] == "CoauthorCS" else 1500, num_per_class=opt['num_random_seeds'])
 
   data = dataset.data.to(device)
 
@@ -236,6 +243,7 @@ def main(cmd_opt):
   best_test_acc = 0.0
   run_time_ls = []
   fw_nfe_ls = []
+  train_accs, val_accs, test_accs, losses = [], [], [], []
 
   try:
       for epoch in range(1, opt['epoch']):
@@ -262,26 +270,20 @@ def main(cmd_opt):
           train_acc = model.odeblock.test_integrator.solver.best_train
           best_time = model.odeblock.test_integrator.solver.best_time
 
-        log = 'Epoch: {:03d}, Runtime {:03f}, Loss {:03f}, forward nfe {:d}, backward nfe {:d}, Train: {:.4f}, Val: {:.4f}, Test: {:.4f}, Best time: {:.4f}'
+        log = 'Epoch: {:03d}/{:03d}, Runtime {:03f}, Loss {:03f}, forward nfe {:d}, backward nfe {:d}, Train: {:.4f}, Val: {:.4f}, Test: {:.4f}, Best time: {:.4f}'
         
-        wandb.log({
-            'run_time' : time.time() - start_time,
-            'loss' : loss,
-            'train_acc' : train_acc,
-            'val_acc' : val_acc,
-            'test_acc' : test_acc,
-            'forward_nfe' : model.fm.sum
-        })
-
         fw_nfe_ls.append(model.fm.sum)
         run_time_ls.append(time.time() - start_time)
+        train_accs.append(train_acc)
+        val_accs.append(val_acc)
+        test_accs.append(test_acc)
 
         if(best_val_acc < val_acc): best_val_acc = val_acc
         if(best_test_acc < test_acc) : best_test_acc = test_acc
 
-        print(log.format(epoch, time.time() - start_time, loss, model.fm.sum, model.bm.sum, train_acc, val_acc, test_acc, best_time))
+        print(log.format(epoch, opt['epoch'], time.time() - start_time, loss, model.fm.sum, model.bm.sum, train_acc, val_acc, test_acc, best_time))
   except:
-        pass
+        traceback.print_exc(file=sys.stdout)
 
   print('best val accuracy {:03f} with test accuracy {:03f} at epoch {:d} and best time {:03f}'.format(val_acc, test_acc,
                                                                                                      best_epoch,
@@ -295,7 +297,7 @@ def main(cmd_opt):
   with open("tests/history.csv", "a") as f:
       f.write(f"{opt['time']},{opt['alpha_']},{opt['clip_bound']},{best_val_acc},{best_test_acc},{mean_fw_nfe},{mean_run_time},{min_run_time},{max_run_time}\n")
 
-  return train_acc, val_acc, test_acc
+  return fw_nfe_ls, losses, train_accs, val_accs, test_accs
 
 
 if __name__ == '__main__':
@@ -313,6 +315,14 @@ if __name__ == '__main__':
                       help='% of training labels to use when --use_labels is set.')
   parser.add_argument('--planetoid_split', action='store_true',
                       help='use planetoid splits for Cora/Citeseer/Pubmed')
+  parser.add_argument('--geom_gcn_splits', dest='geom_gcn_splits', action='store_true',
+                      help='use the 10 fixed splits from '
+                           'https://arxiv.org/abs/2002.05287')
+  parser.add_argument('--num_splits', type=int, dest='num_splits', default=1,
+                      help='the number of splits to repeat the results on')
+  parser.add_argument('--num_random_seeds', type=int, default=20, 
+                      help='Number of random seeds per class')
+
   # GNN args
   parser.add_argument('--hidden_dim', type=int, default=16, help='Hidden dimension.')
   parser.add_argument('--fc_out', dest='fc_out', action='store_true',
@@ -387,6 +397,10 @@ if __name__ == '__main__':
   parser.add_argument('--kinetic_energy', type=float, default=None, help="int_t ||f||_2^2")
   parser.add_argument('--directional_penalty', type=float, default=None, help="int_t ||(df/dx)^T f||^2")
 
+  # weight decay args
+  parser.add_argument('--l1_reg', action='store_true', help='Whether to use l1 weight decay or not')
+  parser.add_argument('--l1_weight_decay', type=float, default=0.001, help='l1 weight decay coefficient')
+
   # rewiring args
   parser.add_argument("--not_lcc", action="store_false", help="don't use the largest connected component")
   parser.add_argument('--rewiring', type=str, default=None, help="two_hop, gdc")
@@ -447,12 +461,12 @@ if __name__ == '__main__':
 
   # Experiment mode - do not overwrite command options with best params
   parser.add_argument("--experiment", action="store_true", help="Turn on or off experiment mode.")
-  parser.add_argument("--run_name", required=False, default=None, help="Run ID for wandb project")
   parser.add_argument("--run_notes", required=False, default=None, help="Additional description of the run")
 
   # For extended laplacian functions with clipping bounds.
   parser.add_argument("--alpha_", type=float, required=False, default=1.0, help='Alpha value')
   parser.add_argument("--clip_bound", type=float, required=False, default=0.05, help='Norm clipping bound')
+  parser.add_argument("--only_cpu", action='store_true', required=False, help="Use only CPU")
 
   args = parser.parse_args()
 

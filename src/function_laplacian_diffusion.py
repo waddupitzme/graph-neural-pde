@@ -194,6 +194,10 @@ class ExtendedLaplacianODEFunc3(ODEFunc):
     self.alpha_sc = nn.Parameter(torch.ones(1))
     self.beta_sc = nn.Parameter(torch.ones(1))
 
+    # For attention matrices
+    self.A = None
+    self.P_inv = None
+
   def sparse_multiply(self, x):
     if self.opt['block'] in ['attention']:  # adj is a multihead attention
       mean_attention = self.attention_weights.mean(dim=1)
@@ -203,6 +207,14 @@ class ExtendedLaplacianODEFunc3(ODEFunc):
     else:  # adj is a torch sparse matrix
       ax = torch_sparse.spmm(self.edge_index, self.edge_weight, x.shape[0], x.shape[0], x)
     return ax
+
+  def construct_dense_att_matrix(self, edge_index, edge_weight, num_node):
+    att_matrix = torch.zeros((num_node, num_node))
+
+    for i, (src, dst) in enumerate(zip(edge_index[0,:], edge_index[1,:])):
+        att_matrix[src, dst] = edge_weight[i]
+
+    return att_matrix
 
   def forward(self, t, x):  # the t param is needed by the ODE solver.
     if self.nfe > self.opt["max_nfe"]:
@@ -217,19 +229,74 @@ class ExtendedLaplacianODEFunc3(ODEFunc):
     # Shape = 2045 x 80 (2045 = Number of nodes; 80 = Feature shape)
     ax = self.sparse_multiply(x)
 
-    # Shape = (2045, ) (norm along dim 1)
-    x_norm = torch.linalg.norm(x, 2, dim=0)
+    if(self.A is None):
+        mean_attention = self.attention_weights.mean(dim=1)
+        I = torch.eye(x.shape[0]).to(x)
+        self.A = self.construct_dense_att_matrix(self.edge_index, self.edge_weight, x.shape[0]).to(x)
+        self.A = torch.transpose(self.A, 0, 1)
 
-    print('characteristics of norm of x is: ', x_norm.min().item(), x_norm.mean().item(), x_norm.max().item(), sep="\t")
-    # Truncate x_norm the have max=1
-    x_norm = torch.clamp(x_norm, min=None, max=self.clipping_bound)
+        self.A = self.A - I
+    
+    # Eigen-decompose A
+    if(self.P_inv is None):
+        L, P = torch.linalg.eig(self.A) 
+        self.P_inv = torch.linalg.inv(P).to(x.device) 
 
-    # Shape = (2045, 1)
-    # x_norm = x_norm.view(-1, 1)
+    ax = torch.matmul(self.A, x)
+    x_complex = torch.complex(x, torch.zeros_like(x))
+    z = torch.matmul(self.P_inv, x_complex)
 
-    f = alpha* (ax - x) * (x_norm ** self.alpha_) 
+    z_real, z_imag = z.real, z.imag
+    elemwise_norm = torch.sqrt(z_real ** 2 + z_imag ** 2)
+    elemwise_norm = torch.nan_to_num(elemwise_norm)
+    elemwise_norm = torch.clamp(elemwise_norm, max = 0.5)
+    # elemwise_norm = elemwise_norm / torch.norm(elemwise_norm, 2, dim=1).view(-1,1)
+    f = ax * (elemwise_norm ** self.alpha_)
+    f = torch.nan_to_num(f)
 
     if self.opt['add_source']:
       f = f + self.beta_train * self.x0
 
+    return f
+
+class NormLaplacianODEFunc(ODEFunc):
+
+  # currently requires in_features = out_features
+  def __init__(self, in_features, out_features, opt, data, device):
+    super(NormLaplacianODEFunc, self).__init__(opt, data, device)
+
+    self.in_features = in_features
+    self.out_features = out_features
+    self.w = nn.Parameter(torch.eye(opt['hidden_dim']))
+    self.d = nn.Parameter(torch.zeros(opt['hidden_dim']) + 1)
+    self.alpha_sc = nn.Parameter(torch.ones(1))
+    self.beta_sc = nn.Parameter(torch.ones(1))
+
+  def sparse_multiply(self, x):
+    if self.opt['block'] in ['attention']:  # adj is a multihead attention
+      mean_attention = self.attention_weights.mean(dim=1)
+      ax = torch_sparse.spmm(self.edge_index, mean_attention, x.shape[0], x.shape[0], x)
+    elif self.opt['block'] in ['mixed', 'hard_attention']:  # adj is a torch sparse matrix
+      ax = torch_sparse.spmm(self.edge_index, self.attention_weights, x.shape[0], x.shape[0], x)
+    else:  # adj is a torch sparse matrix
+      ax = torch_sparse.spmm(self.edge_index, self.edge_weight, x.shape[0], x.shape[0], x)
+    return ax
+
+  def forward(self, t, x):  # the t param is needed by the ODE solver.
+    if self.nfe > self.opt["max_nfe"]:
+      raise MaxNFEException
+    self.nfe += 1
+
+    x_norm = torch.sqrt(torch.linalg.norm(x, 2, dim=1))
+    x_norm = x_norm.view(-1, 1)
+    x = x/x_norm
+
+    ax = self.sparse_multiply(x)
+    if not self.opt['no_alpha_sigmoid']:
+      alpha = torch.sigmoid(self.alpha_train)
+    else:
+      alpha = self.alpha_train
+    f = alpha* (ax-x)
+    if self.opt['add_source']:
+      f = f + self.beta_train * self.x0
     return f
